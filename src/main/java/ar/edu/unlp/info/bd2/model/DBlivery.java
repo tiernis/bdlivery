@@ -1,4 +1,4 @@
-package model;
+package ar.edu.unlp.info.bd2.model;
 
 import java.util.*;
 
