@@ -2,6 +2,7 @@ package ar.edu.unlp.info.bd2.services;
 
 import ar.edu.unlp.info.bd2.config.AppConfig;
 import ar.edu.unlp.info.bd2.config.HibernateConfiguration;
+import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.repositories.DBliveryException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {AppConfig.class, HibernateConfiguration.class}, loader = AnnotationConfigContextLoader.class)
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class DBliveryServiceTestCase {
 
     @Autowired
-    DBliveryService service;
+	DBliveryService service;
 
     @Test
     public void testCreateProduct() {
