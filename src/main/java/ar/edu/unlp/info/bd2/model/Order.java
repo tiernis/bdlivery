@@ -9,7 +9,8 @@ public class Order {
 	private Float coordY;
 	private String state;
 	private User client;
-	private Collection<Product> products;
+	private ArrayList<ProductOrder> products;
+	//private Collection<Product> products; para guardar los productos con sus respectivas cantidades esta la clase productOrder
 	private Collection<Order> orders; //ESTOY USANDO ESTA VARIABLE PARA TODAS LAS ORDENES, PERO COMO LAS TOMO TODAS???? ORDER REPRESENTA A SOLO UNA ORDEN.
 	private Long id;//PREGUNTAR COMO SETEAR ESTE ID SI DE ESO SE ENCARGA SIEMPRE SQL
 
@@ -19,7 +20,7 @@ public class Order {
 		this.coordX = coordX;
 		this.coordY = coordY;
 		this.client = user;
-		this.state = "Pendiente";
+		this.state = "pending";
 	}
 
     public Long getId() {
@@ -49,5 +50,17 @@ public class Order {
 
 	public User getDeliveryUser() {
 		return this.client;
+	}
+	
+	public Order addProduct (Long quantity, Product product ) {
+		ProductOrder nuevo = new ProductOrder(quantity,product);
+		this.products.add(nuevo);
+		return this;
+	}
+	
+	public Boolean canCancel() {
+		if(this.state == "pending"){
+			return true;
+		}else {return false;}
 	}
 }

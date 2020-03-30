@@ -4,12 +4,11 @@ package ar.edu.unlp.info.bd2.model;
 
 public class ProductOrder {
 	
-	private Integer cant;
+	private Long quantity;
 	private Product product;
 	
-	public ProductOrder(Integer cant, Product product) {
-		super();
-		this.cant = cant;
+	public ProductOrder(Long quantity, Product product) {
+		this.quantity = quantity;
 		this.product = product;
 	}
 
