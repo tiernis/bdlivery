@@ -2,17 +2,34 @@ package ar.edu.unlp.info.bd2.model;
 
 import java.util.*;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.springframework.data.annotation.Id;
+
+@Entity
+@Table(name = "Order")
 public class Order {
+	@Column(name ="date_of_order")
 	private Date dateOfOrder;
+	@Column(name ="adress_order")
 	private String address;
+	@Column(name ="coordx_order")
 	private Float coordX;
+	@Column(name ="coory_order")
 	private Float coordY;
+	@Column(name ="state")
 	private String state;
+	@OneToOne
 	private User client;
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private ArrayList<ProductOrder> products;
-	//private Collection<Product> products; para guardar los productos con sus respectivas cantidades esta la clase productOrder
-	private Collection<Order> orders; //ESTOY USANDO ESTA VARIABLE PARA TODAS LAS ORDENES, PERO COMO LAS TOMO TODAS???? ORDER REPRESENTA A SOLO UNA ORDEN.
-	private Long id;//PREGUNTAR COMO SETEAR ESTE ID SI DE ESO SE ENCARGA SIEMPRE SQL
+	@Id
+	private Long id;
 
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User user) {
 		this.dateOfOrder = dateOfOrder;
@@ -31,20 +48,11 @@ public class Order {
 		return this.state;
 	}
 
-	public Collection<String> getStatus() {
-		Collection<String> list = new LinkedList<String>();
-		for (Order order : this.orders)
-		{
-			list.add(order.getState());
-		}
-		return list;
-	}
-
-	public Object getClient() {
+	public User getClient() {
 		return this.client;
 	}
 
-	public Collection<Product> getProducts() {
+	public Collection<ProductOrder> getProducts() {
 		return this.products;
 	}
 
@@ -52,6 +60,54 @@ public class Order {
 		return this.client;
 	}
 	
+	public Date getDateOfOrder() {
+		return dateOfOrder;
+	}
+
+	public void setDateOfOrder(Date dateOfOrder) {
+		this.dateOfOrder = dateOfOrder;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Float getCoordX() {
+		return coordX;
+	}
+
+	public void setCoordX(Float coordX) {
+		this.coordX = coordX;
+	}
+
+	public Float getCoordY() {
+		return coordY;
+	}
+
+	public void setCoordY(Float coordY) {
+		this.coordY = coordY;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public void setClient(User client) {
+		this.client = client;
+	}
+
+	public void setProducts(ArrayList<ProductOrder> products) {
+		this.products = products;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public Order addProduct (Long quantity, Product product ) {
 		ProductOrder nuevo = new ProductOrder(quantity,product);
 		this.products.add(nuevo);

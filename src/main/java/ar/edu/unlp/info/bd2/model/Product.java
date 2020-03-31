@@ -1,19 +1,33 @@
 package ar.edu.unlp.info.bd2.model;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+@Entity
+@Table(name = "Product")
 public class Product {
-
-	private Long id; //PREGUNTAR COMO SETEAR ESTE ID SI DE ESO SE ENCARGA SIEMPRE SQL
+	@Id
+	private Long id;
+	@Column(name ="name_product")
 	private String name;
+	@Column(name ="price_product")
 	private Float price;
+	@Column(name ="startDate")
 	private Date startDate;
+	@Column(name ="weight")
 	private Float weight;
+	@OneToOne
 	private Supplier supplier;
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	private ArrayList<OldPrice> oldPrices;
-	private Collection<Product> products;//ESTOY USANDO ESTA VARIABLE PARA TODAS LOS PRODUCTOS, PERO COMO LAS TOMO TODAS???? PRODUCT REPRESENTA A SOLO UN PRODUCTO.
 	
 	public Product(String name, Float price, Float weight, Supplier supplier)
 	{
@@ -24,27 +38,69 @@ public class Product {
 		this.startDate= new Date();
 	}
 
-    public Long getId() {
-		return this.id;
-    }
+	//public Collection<Integer> getPrices() {
+	//	Collection<Integer> list = new LinkedList<Integer>();
+	//	for (Product product : this.products)
+	//	{
+	//		list.add(product.getPrice());
+	//	}
+		
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
-	public Integer getPrice() {
-		return this.price;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Collection<Integer> getPrices() {
-		Collection<Integer> list = new LinkedList<Integer>();
-		for (Product product : this.products)
-		{
-			list.add(product.getPrice());
-		}
-		return list;
+	public Float getPrice() {
+		return price;
 	}
-	//REVISAR ESTO
+
+	public void setPrice(Float price) {
+		this.price = price;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Float getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Float weight) {
+		this.weight = weight;
+	}
+
+	public Supplier getSupplier() {
+		return supplier;
+	}
+
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
+	}
+
+	public ArrayList<OldPrice> getOldPrices() {
+		return oldPrices;
+	}
+
+	public void setOldPrices(ArrayList<OldPrice> oldPrices) {
+		this.oldPrices = oldPrices;
+	}
+
 	public Product updateProductPrice(Float p, Date sd) {
 		OldPrice old = new OldPrice(price,startDate);
 		oldPrices.add(old);
