@@ -1,28 +1,25 @@
 package ar.edu.unlp.info.bd2.model;
 
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "ProductOrder")
 public class ProductOrder {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
 	@Column(name ="quantity")
 	private Long quantity;
 	@OneToOne
 	private Product product;
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Order order;
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = ProductOrder.class)
+	private Long order;
 	
-	public ProductOrder(Long quantity, Product product) {
+	public ProductOrder(Long quantity, Product product, Long order) {
 		this.quantity = quantity;
 		this.product = product;
+		this.order = order;
 	}
 
 	public Long getId() {
@@ -49,4 +46,15 @@ public class ProductOrder {
 		this.product = product;
 	}
 
+	public Long getOrder() {
+		return order;
+	}
+
+	public void setOrder(Long order) {
+		this.order = order;
+	}
+
+	public short getStatus() {
+		return 0;
+	}
 }

@@ -2,15 +2,14 @@ package ar.edu.unlp.info.bd2.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "User")
 public class User {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
 	@Column(name ="email")
 	private String email;

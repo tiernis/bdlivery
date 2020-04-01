@@ -2,23 +2,18 @@ package ar.edu.unlp.info.bd2.model;
 
 import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.springframework.data.annotation.Id;
-
-import ar.edu.unlp.info.bd2.repositories.DBliveryException;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "Order")
+@Table(name = "Orden")
 public class Order {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
+	private Long id;
 	@Column(name ="date_of_order")
 	private Date dateOfOrder;
-	@Column(name ="adress_order")
+	@Column(name ="address_order")
 	private String address;
 	@Column(name ="coordx_order")
 	private Float coordX;
@@ -30,10 +25,8 @@ public class Order {
 	private User client;
 	@OneToOne
 	private User delivery;
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	private ArrayList<ProductOrder> products;
-	@Id
-	private Long id;
+	//@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	//private ArrayList<ProductOrder> products;
 
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User user) {
 		this.dateOfOrder = dateOfOrder;
@@ -56,9 +49,9 @@ public class Order {
 		return this.client;
 	}
 
-	public Collection<ProductOrder> getProducts() {
+	/*public Collection<ProductOrder> getProducts() {
 		return this.products;
-	}
+	}*/
 
 	public User getDeliveryUser() {
 		return this.client;
@@ -104,19 +97,19 @@ public class Order {
 		this.client = client;
 	}
 
-	public void setProducts(ArrayList<ProductOrder> products) {
+	/*public void setProducts(ArrayList<ProductOrder> products) {
 		this.products = products;
-	}
+	}*/
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Order addProduct (Long quantity, Product product ) {
+	/*public Order addProduct (Long quantity, Product product ) {
 		ProductOrder nuevo = new ProductOrder(quantity,product);
 		this.products.add(nuevo);
 		return this;
-	}
+	}*/
 	
 	public Boolean canCancel() {
 		if(this.state == "pending"){
@@ -130,11 +123,11 @@ public class Order {
 		}else {return false;}
 	}
 	
-	public Boolean canDeliver() {
+	/*public Boolean canDeliver() {
 		if((this.state == "pending") && (this.products.size() != 0)){
 			return true;
 		}else {return false;}
-	}
+	}*/
 	
 	public Order deliverOrder(User deliveryUser) {
 		this.delivery= deliveryUser;
@@ -150,5 +143,13 @@ public class Order {
 	public Order finishOrder() {
 		this.state="Finished";
 		return this;
+	}
+
+	public Collection<Object> getStatus() {
+		return null;
+	}
+
+	public Collection<Object> getProducts() {
+		return null;
 	}
 }

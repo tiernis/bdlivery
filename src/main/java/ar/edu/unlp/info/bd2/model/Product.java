@@ -1,20 +1,15 @@
 package ar.edu.unlp.info.bd2.model;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Product")
 public class Product {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
 	@Column(name ="name_product")
 	private String name;
@@ -26,27 +21,21 @@ public class Product {
 	private Float weight;
 	@OneToOne
 	private Supplier supplier;
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-	private ArrayList<OldPrice> oldPrices;
+	@Column
+	@ElementCollection(targetClass=Price.class)
+	private List<Price> allPrices;
 	
 	public Product(String name, Float price, Float weight, Supplier supplier)
 	{
 		this.name = name;
-		this.price = price;
+		this.allPrices = new ArrayList<>();
+		this.setPrice(price);
 		this.weight = weight;
 		this.supplier = supplier;
-		this.startDate= new Date();
 	}
-
-	//public Collection<Integer> getPrices() {
-	//	Collection<Integer> list = new LinkedList<Integer>();
-	//	for (Product product : this.products)
-	//	{
-	//		list.add(product.getPrice());
-	//	}
 		
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
@@ -54,7 +43,7 @@ public class Product {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -62,11 +51,14 @@ public class Product {
 	}
 
 	public Float getPrice() {
-		return price;
+		return this.price;
 	}
 
 	public void setPrice(Float price) {
 		this.price = price;
+		this.startDate = new Date();
+		Price new_price = new Price(this.price, this.startDate, this.id);
+		this.allPrices.add(new_price);
 	}
 
 	public Date getStartDate() {
@@ -93,19 +85,12 @@ public class Product {
 		this.supplier = supplier;
 	}
 
-	public ArrayList<OldPrice> getOldPrices() {
-		return oldPrices;
+	public List<Price> getPrices(){
+		return allPrices;
 	}
 
-	public void setOldPrices(ArrayList<OldPrice> oldPrices) {
-		this.oldPrices = oldPrices;
-	}
-
-	public Product updateProductPrice(Float p, Date sd) {
-		OldPrice old = new OldPrice(price,startDate);
-		oldPrices.add(old);
-		this.price = p;
-		this.startDate = sd;
+	public Product updateProductPrice(Float price) {
+		this.setPrice(price);
 		return this;
 	}
 

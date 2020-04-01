@@ -18,42 +18,49 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
-        return null;
+        Product product = new Product(name, price, weight, supplier);
+        repository.save(product);
+        return product;
     }
 
     @Override
     public Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY) {
-        return null;
+        Supplier supplier = new Supplier(name, cuil, address, coordX, coordY);
+        repository.save(supplier);
+        return supplier;
     }
 
     @Override
     public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
-        return null;
+        User user = new User(email, password, name, username, dateOfBirth);
+        repository.save(user);
+        return user;
     }
 
     @Override
     public Product updateProductPrice(Long id, Float price, Date startDate) throws DBliveryException {
-        return null;
+        Optional<Product> product = this.getProductById(id);
+        return product.get().updateProductPrice(price);
     }
 
     @Override
     public Optional<User> getUserById(Long id) {
-        return Optional.empty();
+        return Optional.of(repository.getUserBy("id", id).get(0));
     }
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        return Optional.empty();
+        return Optional.of(repository.getUserBy("email", email).get(0));
     }
 
     @Override
     public Optional<User> getUserByUsername(String username) {
-        return Optional.empty();
+        return Optional.of(repository.getUserBy("username", username).get(0));
     }
 
     @Override
     public Optional<Product> getProductById(Long id) {
-        return Optional.empty();
+        return Optional.of(repository.getProductById(id).get(0));
     }
 
     @Override
@@ -68,6 +75,8 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Order addProduct(Long order, Long quantity, Product product) throws DBliveryException {
+        ProductOrder productOrder = new ProductOrder(quantity, product, order);
+        repository.save(productOrder);
         return null;
     }
 
@@ -108,6 +117,6 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public List<Product> getProductByName(String name) {
-        return null;
+        return repository.getProductByName(name);
     }
 }

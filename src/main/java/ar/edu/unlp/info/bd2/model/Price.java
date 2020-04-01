@@ -2,24 +2,21 @@ package ar.edu.unlp.info.bd2.model;
 
 import java.util.*;
 
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "OldPrice")
-public class OldPrice {
+@Table(name = "Price")
+public class Price {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
 	@Column(name ="price")
 	private Float price;
 	@Column(name ="startDate")
 	private Date startDate;
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Product product;
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class)
+	private Long id_product;
 	
 	public Long getId() {
 		return id;
@@ -29,9 +26,10 @@ public class OldPrice {
 		this.id = id;
 	}
 	
-	public OldPrice(Float price, Date startDate) {
+	public Price(Float price, Date startDate, Long id_product) {
 		this.price = price;
 		this.startDate = startDate;
+		this.id_product = id_product;
 	}
 
 	public Float getPrice() {
@@ -49,5 +47,12 @@ public class OldPrice {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
+
+	public Long getProduct() {
+		return id_product;
+	}
+
+	public void setProduct(Long id_product) {
+		this.id_product = id_product;
+	}
 }

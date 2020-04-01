@@ -1,27 +1,26 @@
 package ar.edu.unlp.info.bd2.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Supplier")
 public class Supplier {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
 	@Column(name ="name_supplier")
 	private String name;
 	@Column(name ="cuil")
-	private Integer cuil;
-	@Column(name ="adress_supplier")
+	private String cuil;
+	@Column(name ="address_supplier")
 	private String address;
 	@Column(name ="coordx_supplier")
 	private Float coordX;
 	@Column(name ="coory_supplier")
 	private Float coordY;
 	
-	public Supplier(String name, Integer cuil, String address, Float coordX, Float coordY) {
+	public Supplier(String name, String cuil, String address, Float coordX, Float coordY) {
 		this.name = name;
 		this.cuil = cuil;
 		this.address = address;
@@ -45,11 +44,11 @@ public class Supplier {
 		this.name = name;
 	}
 
-	public Integer getCuil() {
+	public String getCuil() {
 		return cuil;
 	}
 
-	public void setCuil(Integer cuil) {
+	public void setCuil(String cuil) {
 		this.cuil = cuil;
 	}
 
@@ -76,6 +75,5 @@ public class Supplier {
 	public void setCoordY(Float coordY) {
 		this.coordY = coordY;
 	}
-
 	
 }
