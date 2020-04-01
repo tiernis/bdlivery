@@ -11,6 +11,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.annotation.Id;
 
+import ar.edu.unlp.info.bd2.repositories.DBliveryException;
+
 @Entity
 @Table(name = "Order")
 public class Order {
@@ -26,6 +28,8 @@ public class Order {
 	private String state;
 	@OneToOne
 	private User client;
+	@OneToOne
+	private User delivery;
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private ArrayList<ProductOrder> products;
 	@Id
@@ -118,5 +122,33 @@ public class Order {
 		if(this.state == "pending"){
 			return true;
 		}else {return false;}
+	}
+	
+	public Boolean canFinish() {
+		if(this.state == "Send"){
+			return true;
+		}else {return false;}
+	}
+	
+	public Boolean canDeliver() {
+		if((this.state == "pending") && (this.products.size() != 0)){
+			return true;
+		}else {return false;}
+	}
+	
+	public Order deliverOrder(User deliveryUser) {
+		this.delivery= deliveryUser;
+		this.state= "Send";
+		return this;
+	}
+	
+	public Order cancelOrder() {
+		this.state="Canceled";
+		return this;
+	}
+	
+	public Order finishOrder() {
+		this.state="Finished";
+		return this;
 	}
 }
