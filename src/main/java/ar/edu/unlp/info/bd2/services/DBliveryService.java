@@ -70,14 +70,15 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
-        return null;
+        Order order = new Order(dateOfOrder,address,coordX,coordY,client);
+        repository.save(order);
+        return order;
     }
 
     @Override
     public Order addProduct(Long order, Long quantity, Product product) throws DBliveryException {
-        ProductOrder productOrder = new ProductOrder(quantity, product, order);
-        repository.save(productOrder);
-        return null;
+        Order orderConcrete = this.repository.getOrderById(order).get(0);
+        return orderConcrete.addProduct(quantity, product);
     }
 
     @Override
@@ -92,7 +93,8 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Order finishOrder(Long order) throws DBliveryException {
-        return null;
+        Order orderConcrete = this.repository.getOrderById(order).get(0);
+        return orderConcrete.finishOrder();
     }
 
     @Override

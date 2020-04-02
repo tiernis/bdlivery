@@ -1,5 +1,7 @@
 package ar.edu.unlp.info.bd2.model;
 
+import ar.edu.unlp.info.bd2.repositories.DBliveryException;
+
 import java.util.*;
 
 import javax.persistence.*;
@@ -25,8 +27,8 @@ public class Order {
 	private User client;
 	@OneToOne
 	private User delivery;
-	//@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	//private ArrayList<ProductOrder> products;
+	@ElementCollection(targetClass=ProductOrder.class)
+	private List<ProductOrder> products;
 
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User user) {
 		this.dateOfOrder = dateOfOrder;
@@ -34,7 +36,8 @@ public class Order {
 		this.coordX = coordX;
 		this.coordY = coordY;
 		this.client = user;
-		this.state = "pending";
+		this.state = "Pending";
+		this.products = new ArrayList<>();
 	}
 
     public Long getId() {
@@ -49,9 +52,9 @@ public class Order {
 		return this.client;
 	}
 
-	/*public Collection<ProductOrder> getProducts() {
+	public List<ProductOrder> getProducts() {
 		return this.products;
-	}*/
+	}
 
 	public User getDeliveryUser() {
 		return this.client;
@@ -97,19 +100,15 @@ public class Order {
 		this.client = client;
 	}
 
-	/*public void setProducts(ArrayList<ProductOrder> products) {
-		this.products = products;
-	}*/
-
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/*public Order addProduct (Long quantity, Product product ) {
-		ProductOrder nuevo = new ProductOrder(quantity,product);
-		this.products.add(nuevo);
+	public Order addProduct (Long quantity, Product product) {
+		ProductOrder new_product = new ProductOrder(quantity,product,this.id);
+		this.products.add(new_product);
 		return this;
-	}*/
+	}
 	
 	public Boolean canCancel() {
 		if(this.state == "pending"){
@@ -140,16 +139,19 @@ public class Order {
 		return this;
 	}
 	
-	public Order finishOrder() {
-		this.state="Finished";
-		return this;
+	public Order finishOrder() throws DBliveryException {
+		if (this.state == "Send"){
+			this.state = "Delivered";
+			return this;
+		}
+		else {
+			throw new DBliveryException("The order can't be finished");
+		}
 	}
 
-	public Collection<Object> getStatus() {
-		return null;
-	}
-
-	public Collection<Object> getProducts() {
-		return null;
+	public List<String> getStatus() {
+		List<String> list = new LinkedList<>();
+		list.add(this.state);
+		return list;
 	}
 }
