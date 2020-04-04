@@ -1,6 +1,6 @@
 package ar.edu.unlp.info.bd2.model;
 
-import ar.edu.unlp.info.bd2.repositories.DBliveryException;
+
 
 import java.util.*;
 
@@ -21,22 +21,26 @@ public class Order {
 	private Float coordX;
 	@Column(name ="coory_order")
 	private Float coordY;
-	@Column(name ="state")
-	private String state;
+	//@Column(name ="state")
+	//private String state;
 	@OneToOne
 	private User client;
 	@OneToOne
 	private User delivery;
 	@ElementCollection(targetClass=ProductOrder.class)
 	private List<ProductOrder> products;
-
+	@ElementCollection
+	private List<String> allStates;
+	
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User user) {
 		this.dateOfOrder = dateOfOrder;
 		this.address = address;
 		this.coordX = coordX;
 		this.coordY = coordY;
 		this.client = user;
-		this.state = "Pending";
+		//this.state = "Pending";
+		this.allStates=new ArrayList<>();
+		this.allStates.add("Pending");
 		this.products = new ArrayList<>();
 	}
 
@@ -44,9 +48,9 @@ public class Order {
 		return this.id;
     }
 
-    public String getState(){
-		return this.state;
-	}
+    //public String getState(){
+	//	return this.state;
+	//}
 
 	public User getClient() {
 		return this.client;
@@ -57,7 +61,7 @@ public class Order {
 	}
 
 	public User getDeliveryUser() {
-		return this.client;
+		return this.delivery;
 	}
 	
 	public Date getDateOfOrder() {
@@ -92,9 +96,9 @@ public class Order {
 		this.coordY = coordY;
 	}
 
-	public void setState(String state) {
-		this.state = state;
-	}
+	//public void setState(String state) {
+	//	this.state = state;
+	//}
 
 	public void setClient(User client) {
 		this.client = client;
@@ -111,47 +115,43 @@ public class Order {
 	}
 	
 	public Boolean canCancel() {
-		if(this.state == "pending"){
+		if(this.allStates.size() == 1){
 			return true;
 		}else {return false;}
 	}
 	
 	public Boolean canFinish() {
-		if(this.state == "Send"){
+		if(this.allStates.size() == 2){
 			return true;
 		}else {return false;}
 	}
 	
-	/*public Boolean canDeliver() {
-		if((this.state == "pending") && (this.products.size() != 0)){
+	public Boolean canDeliver() {
+		if((this.allStates.size() == 1) && (this.products.size() != 0)){
 			return true;
 		}else {return false;}
-	}*/
+	}
 	
 	public Order deliverOrder(User deliveryUser) {
 		this.delivery= deliveryUser;
-		this.state= "Send";
+		//this.state= "Send";
+		this.allStates.add("Send");
 		return this;
 	}
 	
 	public Order cancelOrder() {
-		this.state="Canceled";
+		//this.state="Canceled";
+		this.allStates.add("Canceled");
 		return this;
 	}
 	
-	public Order finishOrder() throws DBliveryException {
-		if (this.state == "Send"){
-			this.state = "Delivered";
+	public Order finishOrder() {
+			//this.state = "Delivered";
+			this.allStates.add("Delivered");
 			return this;
-		}
-		else {
-			throw new DBliveryException("The order can't be finished");
-		}
 	}
 
 	public List<String> getStatus() {
-		List<String> list = new LinkedList<>();
-		list.add(this.state);
-		return list;
+		return this.allStates;
 	}
 }

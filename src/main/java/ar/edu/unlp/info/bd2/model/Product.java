@@ -29,7 +29,7 @@ public class Product {
 	{
 		this.name = name;
 		this.allPrices = new ArrayList<>();
-		this.setPrice(price);
+		this.updateProductPrice(price);
 		this.weight = weight;
 		this.supplier = supplier;
 	}
@@ -56,9 +56,6 @@ public class Product {
 
 	public void setPrice(Float price) {
 		this.price = price;
-		this.startDate = new Date();
-		Price new_price = new Price(this.price, this.startDate, this.id);
-		this.allPrices.add(new_price);
 	}
 
 	public Date getStartDate() {
@@ -91,6 +88,9 @@ public class Product {
 
 	public Product updateProductPrice(Float price) {
 		this.setPrice(price);
+		this.startDate = new Date();
+		Price new_price = new Price(this.price, this.startDate, this.id);
+		this.allPrices.add(new_price);
 		return this;
 	}
 

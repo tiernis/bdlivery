@@ -39,8 +39,12 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Product updateProductPrice(Long id, Float price, Date startDate) throws DBliveryException {
-        Optional<Product> product = this.getProductById(id);
-        return product.get().updateProductPrice(price);
+    	if(this.repository.getProductById(id).size() != 0) {
+    		Product product = this.repository.getProductById(id).get(0);
+        	product.updateProductPrice(price);
+        	repository.save(product);
+        	return product;
+    	}else {throw new DBliveryException("The product don't exist");}
     }
 
     @Override
@@ -65,7 +69,7 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Optional<Order> getOrderById(Long id) {
-        return Optional.empty();
+        return Optional.of(repository.getOrderById(id).get(0));
     }
 
     @Override
@@ -77,39 +81,72 @@ public class DBliveryService implements DBliveryServiceable {
 
     @Override
     public Order addProduct(Long order, Long quantity, Product product) throws DBliveryException {
-        Order orderConcrete = this.repository.getOrderById(order).get(0);
-        return orderConcrete.addProduct(quantity, product);
+        if(this.repository.getOrderById(order).size() != 0) {
+        	Order orderConcrete = this.repository.getOrderById(order).get(0);
+        	orderConcrete.addProduct(quantity, product);
+        	repository.save(orderConcrete);
+        	return orderConcrete;
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public Order deliverOrder(Long order, User deliveryUser) throws DBliveryException {
-        return null;
+    	if(this.repository.getOrderById(order).size() != 0) {
+    		Order orderConcrete = this.repository.getOrderById(order).get(0);
+    		if(orderConcrete.canDeliver()) {
+    			orderConcrete.deliverOrder(deliveryUser);
+    			repository.save(orderConcrete);
+    			return orderConcrete;
+    		}else { throw new DBliveryException("The order can't be delivered");}
+    	}else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public Order cancelOrder(Long order) throws DBliveryException {
-        return null;
+    	if(this.repository.getOrderById(order).size() != 0) {
+    		Order orderConcrete = this.repository.getOrderById(order).get(0);
+    		if(orderConcrete.canCancel()) {
+    			orderConcrete.cancelOrder();
+    			repository.save(orderConcrete);
+    			return orderConcrete;
+    		}else { throw new DBliveryException("The order can't be canceled");}
+    	}else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public Order finishOrder(Long order) throws DBliveryException {
-        Order orderConcrete = this.repository.getOrderById(order).get(0);
-        return orderConcrete.finishOrder();
+    	if(this.repository.getOrderById(order).size() != 0) {
+    		Order orderConcrete = this.repository.getOrderById(order).get(0);
+        	if(orderConcrete.canFinish()) {
+        		orderConcrete.finishOrder();
+        		repository.save(orderConcrete);
+        		return orderConcrete;
+        	}else { throw new DBliveryException("The order can't be finished");}
+    	}else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public boolean canCancel(Long order) throws DBliveryException {
-        return false;
+    	if(this.repository.getOrderById(order).size() != 0) {
+    		Order orderConcrete = this.repository.getOrderById(order).get(0);
+    		return orderConcrete.canCancel();
+    	}else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
-    public boolean canFinish(Long id) throws DBliveryException {
-        return false;
+    public boolean canFinish(Long order) throws DBliveryException {
+    	if(this.repository.getOrderById(order).size() != 0) {
+    		Order orderConcrete = this.repository.getOrderById(order).get(0);
+    		return orderConcrete.canFinish();
+    	}else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public boolean canDeliver(Long order) throws DBliveryException {
-        return false;
+    	if(this.repository.getOrderById(order).size() != 0) {
+    		Order orderConcrete = this.repository.getOrderById(order).get(0);
+    		return orderConcrete.canDeliver();
+    	}else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
