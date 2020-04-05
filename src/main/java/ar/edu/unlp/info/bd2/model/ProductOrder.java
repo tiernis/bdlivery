@@ -5,21 +5,24 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ProductOrder")
 public class ProductOrder {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique=true, nullable = false)
+
+	@EmbeddedId
 	private Long id;
+	@ManyToOne
+	@MapsId("product_id")
+	@JoinColumn(name = "product_id")
+	private Product product;
+	@ManyToOne
+	@MapsId("order_id")
+	@JoinColumn(name = "order_id")
+	private Order order;
 	@Column(name ="quantity")
 	private Long quantity;
-	@OneToOne
-	private Product product;
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = ProductOrder.class)
-	private Long order;
 	
-	public ProductOrder(Long quantity, Product product, Long order) {
-		this.quantity = quantity;
-		this.product = product;
-		this.order = order;
+	public ProductOrder(Long quantity, Product product, Order order) {
+		this.setQuantity(quantity);
+		this.setProduct(product);
+		this.setOrder(order);
 	}
 
 	public Long getId() {
@@ -30,14 +33,6 @@ public class ProductOrder {
 		this.id = id;
 	}
 
-	public Long getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
-
 	public Product getProduct() {
 		return product;
 	}
@@ -46,15 +41,19 @@ public class ProductOrder {
 		this.product = product;
 	}
 
-	public Long getOrder() {
+	public Order getOrder() {
 		return order;
 	}
 
-	public void setOrder(Long order) {
+	public void setOrder(Order order) {
 		this.order = order;
 	}
 
-	public short getStatus() {
-		return 0;
+	public Long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
 	}
 }

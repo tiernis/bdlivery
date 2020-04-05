@@ -163,7 +163,6 @@ public class DBliveryServiceTestCase {
         Order o3 = this.service.deliverOrder(o2.getId(),u2);
         assertTrue(this.service.canFinish(o3.getId()));
         Order o4 = this.service.finishOrder(o3.getId());
-        //EL GET STATUS DEL ORDER SE REFIERE A LOS ESTADOS POR LOS QUE PASO LA ORDEN, POR ESO CUANDO RECIEN SE CREA LA ORDEN ES UNO, PORQUE SOLO PASO(Y SE ENCUENTRA) EN ESTADO PENDING. EN ESTE CASO, EL GET STATUS ES 3 PORQUE LA ORDEN PASO POR PENDING, POR SEND Y FINALMENTE POR DELIVERED, ES DECIR, POR 3 ESTADOS. LA IDEA ES TENER UNA LISTA DE ESTADOS QUE A MEDIDA QUE SE INVOCAN LAS OPERACIONES CAMBIE EL ESTADO Y LO AGREGUE A LA LISTA. UNA VEZ HECHO ESO, EL RESTO DE LOS TESTS DEBERIAN RESOLVERSE CASI SOLOS.
         assertNotNull(o4.getId());
         assertEquals(3,o3.getStatus().size());
         assertEquals(this.service.getActualStatus(o4.getId()).getStatus(),"Delivered");

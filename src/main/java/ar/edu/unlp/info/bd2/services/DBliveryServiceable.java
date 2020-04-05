@@ -161,7 +161,7 @@ public interface DBliveryServiceable {
 	 * @param order pedido del cual se debe retornar el estado actual
 	 * @return el estado del pedido actual
 	 */
-	ProductOrder getActualStatus(Long order);
+	OrderStatus getActualStatus(Long order);
 	
 	/**
 	 * Obtiene el listado de productos que su nombre contega el string dado

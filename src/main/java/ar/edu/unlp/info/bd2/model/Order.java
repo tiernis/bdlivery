@@ -1,7 +1,5 @@
 package ar.edu.unlp.info.bd2.model;
 
-
-
 import java.util.*;
 
 import javax.persistence.*;
@@ -21,49 +19,36 @@ public class Order {
 	private Float coordX;
 	@Column(name ="coory_order")
 	private Float coordY;
-	//@Column(name ="state")
-	//private String state;
+	@OneToMany(mappedBy = "order")
+	private List<OrderStatus> status = new ArrayList<>();
 	@OneToOne
 	private User client;
 	@OneToOne
 	private User delivery;
-	@ElementCollection(targetClass=ProductOrder.class)
-	private List<ProductOrder> products;
-	@ElementCollection
-	private List<String> allStates;
+	@OneToMany(mappedBy = "order")
+	private List<ProductOrder> products = new ArrayList<>();
 	
-	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User user) {
-		this.dateOfOrder = dateOfOrder;
-		this.address = address;
-		this.coordX = coordX;
-		this.coordY = coordY;
-		this.client = user;
-		//this.state = "Pending";
-		this.allStates=new ArrayList<>();
-		this.allStates.add("Pending");
-		this.products = new ArrayList<>();
+	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
+		this.setDateOfOrder(dateOfOrder);
+		this.setAddress(address);
+		this.setCoordX(coordX);
+		this.setCoordY(coordY);
+		this.setClient(client);
+		this.addStatus("Pending");
+	}
+
+	public Order getMe(){
+		return this;
 	}
 
     public Long getId() {
 		return this.id;
     }
 
-    //public String getState(){
-	//	return this.state;
-	//}
-
-	public User getClient() {
-		return this.client;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public List<ProductOrder> getProducts() {
-		return this.products;
-	}
-
-	public User getDeliveryUser() {
-		return this.delivery;
-	}
-	
 	public Date getDateOfOrder() {
 		return dateOfOrder;
 	}
@@ -96,62 +81,71 @@ public class Order {
 		this.coordY = coordY;
 	}
 
-	//public void setState(String state) {
-	//	this.state = state;
-	//}
+	public List<OrderStatus> getStatus(){
+		return this.status;
+	}
+
+	public User getClient() {
+		return this.client;
+	}
 
 	public void setClient(User client) {
 		this.client = client;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public User getDeliveryUser() {
+		return this.delivery;
+	}
+
+	public void setDelivery(User delivery) {
+		this.delivery = delivery;
+	}
+
+	public List<ProductOrder> getProducts() {
+		return this.products;
 	}
 
 	public Order addProduct (Long quantity, Product product) {
-		ProductOrder new_product = new ProductOrder(quantity,product,this.id);
-		this.products.add(new_product);
+		ProductOrder newProduct = new ProductOrder(quantity, product, this.getMe());
+		this.getProducts().add(newProduct);
+		return this;
+	}
+
+	public Order addStatus(String status){
+		OrderStatus orderStatus = new OrderStatus(status, this.getMe(), this.getClient());
+		this.getStatus().add(orderStatus);
 		return this;
 	}
 	
 	public Boolean canCancel() {
-		if(this.allStates.size() == 1){
-			return true;
-		}else {return false;}
+		return (this.getStatus().size() == 1);
 	}
 	
 	public Boolean canFinish() {
-		if(this.allStates.size() == 2){
-			return true;
-		}else {return false;}
+		return (this.getStatus().size() == 2);
 	}
 	
 	public Boolean canDeliver() {
-		if((this.allStates.size() == 1) && (this.products.size() != 0)){
-			return true;
-		}else {return false;}
+		return ((this.getStatus().size() == 1) && (this.getProducts().size() != 0));
 	}
 	
 	public Order deliverOrder(User deliveryUser) {
-		this.delivery= deliveryUser;
-		//this.state= "Send";
-		this.allStates.add("Send");
+		this.setDelivery(deliveryUser);
+		this.addStatus("Sent");
 		return this;
 	}
 	
 	public Order cancelOrder() {
-		//this.state="Canceled";
-		this.allStates.add("Canceled");
+		this.addStatus("Cancelled");
 		return this;
 	}
 	
 	public Order finishOrder() {
-			//this.state = "Delivered";
-			this.allStates.add("Delivered");
-			return this;
+		this.addStatus("Delivered");
+		return this;
 	}
 
-	public List<String> getStatus() {
-		return this.allStates;
+	public OrderStatus getActualStatus(){
+		return this.getStatus().get(this.getStatus().size() - 1);
 	}
 }

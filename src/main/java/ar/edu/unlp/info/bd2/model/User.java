@@ -1,6 +1,8 @@
 package ar.edu.unlp.info.bd2.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -21,14 +23,16 @@ public class User {
 	private String name;
 	@Column(name ="date_of_birth")
 	private Date dateOfBirth;
+	@OneToMany(mappedBy = "user")
+	private List<OrderStatus> statuses = new ArrayList<>();
 	
 	public User(String email, String password, String name, String username, Date dateOfBirth)
 	{
-		this.email = email;
-		this.password = password;
-		this.username = username;
-		this.name = name;
-		this.dateOfBirth = dateOfBirth;
+		this.setEmail(email);
+		this.setPassword(password);
+		this.setUsername(username);
+		this.setName(name);
+		this.setDateOfBirth(dateOfBirth);
 	}
 
 	public Long getId() {

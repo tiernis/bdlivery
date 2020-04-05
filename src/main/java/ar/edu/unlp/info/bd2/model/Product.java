@@ -13,25 +13,25 @@ public class Product {
 	private Long id;
 	@Column(name ="name_product")
 	private String name;
-	@Column(name ="price_product")
-	private Float price;
-	@Column(name ="startDate")
-	private Date startDate;
 	@Column(name ="weight")
 	private Float weight;
 	@OneToOne
 	private Supplier supplier;
-	@Column
-	@ElementCollection(targetClass=Price.class)
-	private List<Price> allPrices;
+	@OneToMany(mappedBy = "product")
+	private List<ProductOrder> orders;
+	@OneToMany(mappedBy = "product")
+	private List<Price> allPrices = new ArrayList<>();
 	
 	public Product(String name, Float price, Float weight, Supplier supplier)
 	{
-		this.name = name;
-		this.allPrices = new ArrayList<>();
+		this.setName(name);
 		this.updateProductPrice(price);
-		this.weight = weight;
-		this.supplier = supplier;
+		this.setWeight(weight);
+		this.setSupplier(supplier);
+	}
+
+	public Product getMe(){
+		return this;
 	}
 		
 	public Long getId() {
@@ -50,24 +50,8 @@ public class Product {
 		this.name = name;
 	}
 
-	public Float getPrice() {
-		return this.price;
-	}
-
-	public void setPrice(Float price) {
-		this.price = price;
-	}
-
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
 	public Float getWeight() {
-		return weight;
+		return this.weight;
 	}
 
 	public void setWeight(Float weight) {
@@ -75,7 +59,7 @@ public class Product {
 	}
 
 	public Supplier getSupplier() {
-		return supplier;
+		return this.supplier;
 	}
 
 	public void setSupplier(Supplier supplier) {
@@ -83,15 +67,20 @@ public class Product {
 	}
 
 	public List<Price> getPrices(){
-		return allPrices;
+		return this.allPrices;
+	}
+
+	public Float getPrice() {
+		return this.getPrices().get(this.getPrices().size() - 1).getPrice();
+	}
+
+	public Date getStartDate() {
+		return this.getPrices().get(this.getPrices().size() - 1).getStartDate();
 	}
 
 	public Product updateProductPrice(Float price) {
-		this.setPrice(price);
-		this.startDate = new Date();
-		Price new_price = new Price(this.price, this.startDate, this.id);
-		this.allPrices.add(new_price);
+		Price new_price = new Price(price, new Date(), this.getMe(), this.getSupplier());
+		this.getPrices().add(new_price);
 		return this;
 	}
-
 }

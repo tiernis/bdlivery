@@ -1,6 +1,7 @@
 package ar.edu.unlp.info.bd2.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Supplier")
@@ -19,13 +20,15 @@ public class Supplier {
 	private Float coordX;
 	@Column(name ="coory_supplier")
 	private Float coordY;
+	@OneToMany(mappedBy = "supplier")
+	private List<Price> allPrices;
 	
 	public Supplier(String name, String cuil, String address, Float coordX, Float coordY) {
-		this.name = name;
-		this.cuil = cuil;
-		this.address = address;
-		this.coordX = coordX;
-		this.coordY = coordY;
+		this.setName(name);
+		this.setCuil(cuil);
+		this.setAddress(address);
+		this.setCoordX(coordX);
+		this.setCoordY(coordY);
 	}
 
 	public Long getId() {

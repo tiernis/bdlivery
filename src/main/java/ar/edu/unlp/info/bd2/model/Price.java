@@ -7,17 +7,29 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Price")
 public class Price {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique=true, nullable = false)
+
+	@EmbeddedId
 	private Long id;
+	@ManyToOne
+	@MapsId("product_id")
+	@JoinColumn(name = "product_id")
+	private Product product;
+	@ManyToOne
+	@MapsId("supplier_id")
+	@JoinColumn(name = "supplier_id")
+	private Supplier supplier;
 	@Column(name ="price")
 	private Float price;
 	@Column(name ="startDate")
 	private Date startDate;
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class)
-	private Long id_product;
 	
+	public Price(Float price, Date startDate, Product product, Supplier supplier) {
+		this.setPrice(price);
+		this.setStartDate(startDate);
+		this.setProduct(product);
+		this.setSupplier(supplier);
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -25,11 +37,21 @@ public class Price {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
-	public Price(Float price, Date startDate, Long id_product) {
-		this.price = price;
-		this.startDate = startDate;
-		this.id_product = id_product;
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public Supplier getSupplier() {
+		return supplier;
+	}
+
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
 	}
 
 	public Float getPrice() {
@@ -46,13 +68,5 @@ public class Price {
 
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
-	}
-
-	public Long getProduct() {
-		return id_product;
-	}
-
-	public void setProduct(Long id_product) {
-		this.id_product = id_product;
 	}
 }

@@ -150,8 +150,9 @@ public class DBliveryService implements DBliveryServiceable {
     }
 
     @Override
-    public ProductOrder getActualStatus(Long order) {
-        return null;
+    public OrderStatus getActualStatus(Long order) {
+        Order orderConcrete = this.repository.getOrderById(order).get(0);
+        return orderConcrete.getActualStatus();
     }
 
     @Override
