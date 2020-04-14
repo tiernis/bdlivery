@@ -25,7 +25,9 @@ public class User {
 	private Date dateOfBirth;
 	@OneToMany(mappedBy = "user")
 	private List<OrderStatus> statuses = new ArrayList<>();
-	
+
+	public User(){}
+
 	public User(String email, String password, String name, String username, Date dateOfBirth)
 	{
 		this.setEmail(email);

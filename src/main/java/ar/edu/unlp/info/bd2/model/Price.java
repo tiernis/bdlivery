@@ -22,6 +22,10 @@ public class Price {
 	private Float price;
 	@Column(name ="startDate")
 	private Date startDate;
+
+	public Price(){
+
+	}
 	
 	public Price(Float price, Date startDate, Product product, Supplier supplier) {
 		this.setPrice(price);

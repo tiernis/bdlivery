@@ -22,6 +22,9 @@ public class Supplier {
 	private Float coordY;
 	@OneToMany(mappedBy = "supplier")
 	private List<Price> allPrices;
+
+	public Supplier(){
+	}
 	
 	public Supplier(String name, String cuil, String address, Float coordX, Float coordY) {
 		this.setName(name);

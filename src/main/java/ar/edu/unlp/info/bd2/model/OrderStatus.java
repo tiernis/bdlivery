@@ -1,6 +1,7 @@
 package ar.edu.unlp.info.bd2.model;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "OrderStatus")
@@ -18,11 +19,18 @@ public class OrderStatus {
     private User user;
     @Column(name = "status", unique=true, nullable = false)
     private String status;
+    @Column(name = "date_status", unique=true, nullable = false)
+    private Date dateStatus;
 
-    public OrderStatus(String status, Order order, User user){
+    public OrderStatus(){
+
+    }
+
+    public OrderStatus(String status, Order order, User user, Date dateStatus){
         this.setStatus(status);
         this.setOrder(order);
         this.setUser(user);
+        this.setDateStatus(dateStatus);
     }
 
     public Long getId() {
@@ -55,5 +63,13 @@ public class OrderStatus {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Date getDateStatus() {
+        return dateStatus;
+    }
+
+    public void setDateStatus(Date dateStatus) {
+        this.dateStatus = dateStatus;
     }
 }

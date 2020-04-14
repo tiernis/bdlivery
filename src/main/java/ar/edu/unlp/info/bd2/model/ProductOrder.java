@@ -18,6 +18,10 @@ public class ProductOrder {
 	private Order order;
 	@Column(name ="quantity")
 	private Long quantity;
+
+	public ProductOrder(){
+
+	}
 	
 	public ProductOrder(Long quantity, Product product, Order order) {
 		this.setQuantity(quantity);

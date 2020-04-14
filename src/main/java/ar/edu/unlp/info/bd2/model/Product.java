@@ -1,5 +1,9 @@
 package ar.edu.unlp.info.bd2.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 import javax.persistence.*;
@@ -21,11 +25,22 @@ public class Product {
 	private List<ProductOrder> orders;
 	@OneToMany(mappedBy = "product")
 	private List<Price> allPrices = new ArrayList<>();
+
+	public Product(){
+	}
 	
 	public Product(String name, Float price, Float weight, Supplier supplier)
 	{
 		this.setName(name);
-		this.updateProductPrice(price);
+		this.updateProductPrice(price, new Date());
+		this.setWeight(weight);
+		this.setSupplier(supplier);
+	}
+
+	public Product(String name, Float price, Float weight, Supplier supplier, Date date)
+	{
+		this.setName(name);
+		this.updateProductPrice(price, date);
 		this.setWeight(weight);
 		this.setSupplier(supplier);
 	}
@@ -78,8 +93,8 @@ public class Product {
 		return this.getPrices().get(this.getPrices().size() - 1).getStartDate();
 	}
 
-	public Product updateProductPrice(Float price) {
-		Price new_price = new Price(price, new Date(), this.getMe(), this.getSupplier());
+	public Product updateProductPrice(Float price, Date date) {
+		Price new_price = new Price(price, date, this.getMe(), this.getSupplier());
 		this.getPrices().add(new_price);
 		return this;
 	}

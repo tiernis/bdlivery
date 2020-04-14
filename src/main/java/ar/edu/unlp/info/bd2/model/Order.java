@@ -11,30 +11,31 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
-	@Column(name ="date_of_order")
-	private Date dateOfOrder;
 	@Column(name ="address_order")
 	private String address;
 	@Column(name ="coordx_order")
 	private Float coordX;
 	@Column(name ="coory_order")
 	private Float coordY;
-	@OneToMany(mappedBy = "order")
+	@OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
 	private List<OrderStatus> status = new ArrayList<>();
 	@OneToOne
 	private User client;
 	@OneToOne
 	private User delivery;
-	@OneToMany(mappedBy = "order")
+	@OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
 	private List<ProductOrder> products = new ArrayList<>();
+
+	public Order(){
+
+	}
 	
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
-		this.setDateOfOrder(dateOfOrder);
 		this.setAddress(address);
 		this.setCoordX(coordX);
 		this.setCoordY(coordY);
 		this.setClient(client);
-		this.addStatus("Pending");
+		this.addOrderStatus("Pending", dateOfOrder);
 	}
 
 	public Order getMe(){
@@ -47,14 +48,6 @@ public class Order {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Date getDateOfOrder() {
-		return dateOfOrder;
-	}
-
-	public void setDateOfOrder(Date dateOfOrder) {
-		this.dateOfOrder = dateOfOrder;
 	}
 
 	public String getAddress() {
@@ -111,8 +104,8 @@ public class Order {
 		return this;
 	}
 
-	public Order addStatus(String status){
-		OrderStatus orderStatus = new OrderStatus(status, this.getMe(), this.getClient());
+	public Order addOrderStatus(String status, Date date){
+		OrderStatus orderStatus = new OrderStatus(status, this.getMe(), this.getClient(), date);
 		this.getStatus().add(orderStatus);
 		return this;
 	}
@@ -129,23 +122,27 @@ public class Order {
 		return ((this.getStatus().size() == 1) && (this.getProducts().size() != 0));
 	}
 	
-	public Order deliverOrder(User deliveryUser) {
+	public Order deliverOrder(User deliveryUser, Date date) {
 		this.setDelivery(deliveryUser);
-		this.addStatus("Sent");
+		this.addOrderStatus("Sent", date);
 		return this;
 	}
 	
-	public Order cancelOrder() {
-		this.addStatus("Cancelled");
+	public Order cancelOrder(Date date) {
+		this.addOrderStatus("Cancelled", date);
 		return this;
 	}
 	
-	public Order finishOrder() {
-		this.addStatus("Delivered");
+	public Order finishOrder(Date date) {
+		this.addOrderStatus("Delivered", date);
 		return this;
 	}
 
 	public OrderStatus getActualStatus(){
 		return this.getStatus().get(this.getStatus().size() - 1);
 	}
+
+    public Float getAmount() {
+		return null;
+    }
 }
