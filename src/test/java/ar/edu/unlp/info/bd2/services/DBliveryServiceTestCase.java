@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DBliveryServiceTestCase {
 
     @Autowired
-	DBliveryService service;
+	DBliveryServiceable service;
 
     @Test
     public void testCreateProduct() {

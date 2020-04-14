@@ -11,7 +11,7 @@ import java.util.Date;
 public class DBInitializer {
 
     @Autowired
-    DBliveryService service;
+    DBliveryServiceable service;
 
     public void prepareDB() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
