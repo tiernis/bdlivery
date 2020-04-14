@@ -2,13 +2,12 @@ package ar.edu.unlp.info.bd2.services;
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.repositories.DBliveryException;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 
-public interface DBliveryServiceable {
+public interface DBliveryServiceable extends DBliveryStatisticsServiceable {
     
 	/**
 	 *  Crea y devuelve un nuevo Producto.
@@ -174,50 +173,4 @@ public interface DBliveryServiceable {
 	 * @return Lista de productos
 	 */
 	List<Product> getProductByName(String name);
-
-	public Collection<Object> getAllOrdersMadeByUser(String user);
-
-	public List<User> getUsersSpendingMoreThan(float quantity);
-
-	public List<Supplier> getTopNSuppliersInSentOrders(int quantity_suppliers);
-
-	public List<Product> getTop10MoreExpensiveProducts();
-
-	public List<User> getTop6UsersMoreOrders();
-
-	public List<Order> getCancelledOrdersInPeriod(Date start, Date end);
-
-	public List<Order> getPendingOrders();
-
-	public List<Order> getSentOrders();
-
-	public List<Order> getDeliveredOrdersInPeriod(Date start, Date end);
-
-	public List<Order> getDeliveredOrdersForUser(String user);
-
-	public List<Order> getSentMoreOneHour();
-
-	public List<Order> getDeliveredOrdersSameDay();
-
-	public List<User> get5LessDeliveryUsers();
-
-	public Product getBestSellingProduct();
-
-	public List<Product> getProductsOnePrice();
-
-	public List<Product> getProductIncreaseMoreThan100();
-
-	public Product getSupplierLessExpensiveProduct();
-
-	public List<Supplier> getSuppliersDoNotSellOn(Date date);
-
-	public List<Product> getSoldProductsOn(Date date);
-
-	public Collection<Object> getOrdersCompleteMorethanOneDay();
-
-	public List<Object[]> getProductsWithPriceAt(Date date);
-
-	public List<Product> getProductsNotSold();
-
-	public List<Order> getOrderWithMoreQuantityOfProducts(Date date);
 }

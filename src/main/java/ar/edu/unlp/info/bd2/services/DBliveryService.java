@@ -6,7 +6,6 @@ import ar.edu.unlp.info.bd2.repositories.DBliveryRepository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -217,11 +216,12 @@ public class DBliveryService implements DBliveryServiceable {
         return repository.getProductByName(name);
     }
 
-    public Collection<Object> getAllOrdersMadeByUser(String user) {
+    public List<Order> getAllOrdersMadeByUser(String user) {
         return null;
     }
 
-    public List<User> getUsersSpendingMoreThan(float quantity) {
+    @Override
+    public List<User> getUsersSpendingMoreThan(Float amount) {
         return null;
     }
 
@@ -281,7 +281,7 @@ public class DBliveryService implements DBliveryServiceable {
         return null;
     }
 
-    public Product getSupplierLessExpensiveProduct() {
+    public Supplier getSupplierLessExpensiveProduct() {
         return null;
     }
 
@@ -293,7 +293,7 @@ public class DBliveryService implements DBliveryServiceable {
         return null;
     }
 
-    public Collection<Object> getOrdersCompleteMorethanOneDay() {
+    public List<Order> getOrdersCompleteMorethanOneDay() {
         return null;
     }
 
