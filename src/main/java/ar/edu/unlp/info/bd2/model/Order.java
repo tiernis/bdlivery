@@ -1,7 +1,7 @@
 package ar.edu.unlp.info.bd2.model;
 
 import java.util.*;
-
+import ar.edu.unlp.info.bd2.repositories.DBliveryException;
 import javax.persistence.*;
 
 @Entity
@@ -111,31 +111,37 @@ public class Order {
 	}
 	
 	public Boolean canCancel() {
-		return (this.getStatus().size() == 1);
+		return (this.getActualStatus().getStatus() == "Pending");
 	}
 	
 	public Boolean canFinish() {
-		return (this.getStatus().size() == 2);
+		return (this.getActualStatus().getStatus() == "Send");
 	}
 	
 	public Boolean canDeliver() {
-		return ((this.getStatus().size() == 1) && (this.getProducts().size() != 0));
+		return ((this.getActualStatus().getStatus() == "Pending") && (this.getProducts().size() != 0));
 	}
 	
-	public Order deliverOrder(User deliveryUser, Date date) {
-		this.setDelivery(deliveryUser);
-		this.addOrderStatus("Sent", date);
-		return this;
+	public Order deliverOrder(User deliveryUser, Date date) throws DBliveryException {
+		if(this.canDeliver()) {
+			this.setDelivery(deliveryUser);
+			this.addOrderStatus("Send", date);
+			return this;
+		}else { throw new DBliveryException("The order can't be delivered");}
 	}
 	
-	public Order cancelOrder(Date date) {
-		this.addOrderStatus("Cancelled", date);
-		return this;
+	public Order cancelOrder(Date date) throws DBliveryException {
+		if(this.canCancel()) {
+			this.addOrderStatus("Cancelled", date);
+			return this;
+		}else { throw new DBliveryException("The order can't be canceled");}
 	}
 	
-	public Order finishOrder(Date date) {
-		this.addOrderStatus("Delivered", date);
-		return this;
+	public Order finishOrder(Date date) throws DBliveryException {
+		if(this.canFinish()) {
+			this.addOrderStatus("Delivered", date);
+			return this;
+		}else { throw new DBliveryException("The order can't be finished");}
 	}
 
 	public OrderStatus getActualStatus(){

@@ -116,11 +116,9 @@ public class DBliveryService implements DBliveryServiceable {
     public Order deliverOrder(Long order, User deliveryUser) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            if(orderConcrete.canDeliver()) {
-                orderConcrete.deliverOrder(deliveryUser, new Date());
-                repository.save(orderConcrete);
-                return orderConcrete;
-            }else { throw new DBliveryException("The order can't be delivered");}
+            orderConcrete.deliverOrder(deliveryUser, new Date());
+            repository.save(orderConcrete);
+            return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
@@ -129,11 +127,9 @@ public class DBliveryService implements DBliveryServiceable {
     public Order deliverOrder(Long order, User deliveryUser, Date date) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            if(orderConcrete.canDeliver()) {
-                orderConcrete.deliverOrder(deliveryUser, date);
-                repository.save(orderConcrete);
-                return orderConcrete;
-            }else { throw new DBliveryException("The order can't be delivered");}
+            orderConcrete.deliverOrder(deliveryUser, date);
+            repository.save(orderConcrete);
+            return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
@@ -142,11 +138,9 @@ public class DBliveryService implements DBliveryServiceable {
     public Order cancelOrder(Long order) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            if(orderConcrete.canCancel()) {
-                orderConcrete.cancelOrder(new Date());
-                repository.save(orderConcrete);
-                return orderConcrete;
-            }else { throw new DBliveryException("The order can't be canceled");}
+            orderConcrete.cancelOrder(new Date());
+            repository.save(orderConcrete);
+            return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
@@ -155,11 +149,9 @@ public class DBliveryService implements DBliveryServiceable {
     public Order cancelOrder(Long order, Date date) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            if(orderConcrete.canCancel()) {
-                orderConcrete.cancelOrder(date);
-                repository.save(orderConcrete);
-                return orderConcrete;
-            }else { throw new DBliveryException("The order can't be canceled");}
+            orderConcrete.cancelOrder(date);
+            repository.save(orderConcrete);
+            return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
@@ -168,11 +160,9 @@ public class DBliveryService implements DBliveryServiceable {
     public Order finishOrder(Long order) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            if(orderConcrete.canFinish()) {
-                orderConcrete.finishOrder(new Date());
-                repository.save(orderConcrete);
-                return orderConcrete;
-            }else { throw new DBliveryException("The order can't be finished");}
+            orderConcrete.finishOrder(new Date());
+            repository.save(orderConcrete);
+            return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
@@ -181,11 +171,9 @@ public class DBliveryService implements DBliveryServiceable {
     public Order finishOrder(Long order, Date date) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            if(orderConcrete.canFinish()) {
-                orderConcrete.finishOrder(date);
-                repository.save(orderConcrete);
-                return orderConcrete;
-            }else { throw new DBliveryException("The order can't be finished");}
+            orderConcrete.finishOrder(date);
+            repository.save(orderConcrete);
+            return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
