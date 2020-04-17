@@ -105,7 +105,7 @@ public class Order {
 	}
 
 	public Order addOrderStatus(String status, Date date){
-		OrderStatus orderStatus = new OrderStatus(status, this.getMe(), this.getClient(), date);
+		OrderStatus orderStatus = new OrderStatus(status, this.getMe(), date);
 		this.getStatus().add(orderStatus);
 		return this;
 	}

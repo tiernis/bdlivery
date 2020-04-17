@@ -217,7 +217,7 @@ public class DBliveryService implements DBliveryServiceable {
         return repository.getProductByName(name);
     }
 
-    public Collection<Object> getAllOrdersMadeByUser(String user) {
+    public List<Order> getAllOrdersMadeByUser(String user) {
         return null;
     }
 
@@ -281,7 +281,7 @@ public class DBliveryService implements DBliveryServiceable {
         return null;
     }
 
-    public Product getSupplierLessExpensiveProduct() {
+    public Supplier getSupplierLessExpensiveProduct() {
         return null;
     }
 
@@ -293,7 +293,7 @@ public class DBliveryService implements DBliveryServiceable {
         return null;
     }
 
-    public Collection<Object> getOrdersCompleteMorethanOneDay() {
+    public List<Order> getOrdersCompleteMorethanOneDay() {
         return null;
     }
 
@@ -308,4 +308,9 @@ public class DBliveryService implements DBliveryServiceable {
     public List<Order> getOrderWithMoreQuantityOfProducts(Date date) {
         return null;
     }
+
+	@Override
+	public List<User> getUsersSpendingMoreThan(Float amount) {
+		return null;
+	}
 }

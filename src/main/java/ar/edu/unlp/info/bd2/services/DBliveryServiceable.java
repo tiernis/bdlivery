@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface DBliveryServiceable {
+public interface DBliveryServiceable extends DBliveryStatisticsServiceable {
     
 	/**
 	 *  Crea y devuelve un nuevo Producto.
@@ -175,7 +175,7 @@ public interface DBliveryServiceable {
 	 */
 	List<Product> getProductByName(String name);
 
-	public Collection<Object> getAllOrdersMadeByUser(String user);
+	public List<Order> getAllOrdersMadeByUser(String user);
 
 	public List<User> getUsersSpendingMoreThan(float quantity);
 
@@ -207,13 +207,13 @@ public interface DBliveryServiceable {
 
 	public List<Product> getProductIncreaseMoreThan100();
 
-	public Product getSupplierLessExpensiveProduct();
+	public Supplier getSupplierLessExpensiveProduct();
 
 	public List<Supplier> getSuppliersDoNotSellOn(Date date);
 
 	public List<Product> getSoldProductsOn(Date date);
 
-	public Collection<Object> getOrdersCompleteMorethanOneDay();
+	public List<Order> getOrdersCompleteMorethanOneDay();
 
 	public List<Object[]> getProductsWithPriceAt(Date date);
 
