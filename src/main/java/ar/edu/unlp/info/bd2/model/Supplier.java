@@ -18,7 +18,7 @@ public class Supplier {
 	private String address;
 	@Column(name ="coordx_supplier")
 	private Float coordX;
-	@Column(name ="coory_supplier")
+	@Column(name ="coordy_supplier")
 	private Float coordY;
 
 	public Supplier(){

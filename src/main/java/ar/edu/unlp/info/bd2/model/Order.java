@@ -15,21 +15,21 @@ public class Order {
 	private String address;
 	@Column(name ="coordx_order")
 	private Float coordX;
-	@Column(name ="coory_order")
+	@Column(name ="coordy_order")
 	private Float coordY;
-	@OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
-	private List<OrderStatus> status = new ArrayList<>();
 	@OneToOne
 	private User client;
 	@OneToOne
 	private User delivery;
-	@OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	private List<OrderStatus> status = new ArrayList<>();
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<ProductOrder> products = new ArrayList<>();
 
 	public Order(){
 
 	}
-	
+
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
 		this.setAddress(address);
 		this.setCoordX(coordX);
@@ -42,9 +42,9 @@ public class Order {
 		return this;
 	}
 
-    public Long getId() {
+	public Long getId() {
 		return this.id;
-    }
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -109,19 +109,19 @@ public class Order {
 		this.getStatus().add(orderStatus);
 		return this;
 	}
-	
+
 	public Boolean canCancel() {
-		return (this.getActualStatus().getStatus() == "Pending");
+		return (this.getActualStatus().getStatus().equals("Pending"));
 	}
-	
+
 	public Boolean canFinish() {
-		return (this.getActualStatus().getStatus() == "Send");
+		return (this.getActualStatus().getStatus().equals("Send"));
 	}
-	
+
 	public Boolean canDeliver() {
-		return ((this.getActualStatus().getStatus() == "Pending") && (this.getProducts().size() != 0));
+		return ((this.getActualStatus().getStatus().equals("Pending")) && (this.getProducts().size() != 0));
 	}
-	
+
 	public Order deliverOrder(User deliveryUser, Date date) throws DBliveryException {
 		if(this.canDeliver()) {
 			this.setDelivery(deliveryUser);
@@ -129,14 +129,14 @@ public class Order {
 			return this;
 		}else { throw new DBliveryException("The order can't be delivered");}
 	}
-	
+
 	public Order cancelOrder(Date date) throws DBliveryException {
 		if(this.canCancel()) {
 			this.addOrderStatus("Cancelled", date);
 			return this;
 		}else { throw new DBliveryException("The order can't be canceled");}
 	}
-	
+
 	public Order finishOrder(Date date) throws DBliveryException {
 		if(this.canFinish()) {
 			this.addOrderStatus("Delivered", date);
@@ -148,7 +148,7 @@ public class Order {
 		return this.getStatus().get(this.getStatus().size() - 1);
 	}
 
-    public Float getAmount() {
+	public Float getAmount() {
 		return null;
-    }
+	}
 }

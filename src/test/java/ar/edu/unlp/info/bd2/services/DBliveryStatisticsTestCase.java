@@ -35,7 +35,7 @@ public class DBliveryStatisticsTestCase {
     DBInitializer initializer;
 
     @Autowired
-    DBliveryService service;
+    DBliveryServiceable service;
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 

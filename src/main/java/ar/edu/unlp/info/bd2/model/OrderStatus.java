@@ -11,11 +11,11 @@ public class OrderStatus {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique=true, nullable = false)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private Order order;
-    @Column(name = "status", unique=true, nullable = false)
+    @Column(name = "status", nullable = false)
     private String status;
-    @Column(name = "date_status", unique=true, nullable = false)
+    @Column(name = "date_status", nullable = false)
     private Date dateStatus;
 
     public OrderStatus(){

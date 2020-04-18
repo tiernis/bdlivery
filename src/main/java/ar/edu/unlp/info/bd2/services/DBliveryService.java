@@ -221,6 +221,11 @@ public class DBliveryService implements DBliveryServiceable {
     }
 
     @Override
+    public List<User> getUsersSpendingMoreThan(float quantity) {
+        return null;
+    }
+
+    @Override
     public List<User> getUsersSpendingMoreThan(Float amount) {
         return null;
     }
@@ -308,9 +313,4 @@ public class DBliveryService implements DBliveryServiceable {
     public List<Order> getOrderWithMoreQuantityOfProducts(Date date) {
         return null;
     }
-
-	@Override
-	public List<User> getUsersSpendingMoreThan(Float amount) {
-		return null;
-	}
 }

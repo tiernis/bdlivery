@@ -12,7 +12,7 @@ public class Price {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	private Product product;
 	@Column(name ="price")
 	private Float price;

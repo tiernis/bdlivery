@@ -12,7 +12,7 @@ public class ProductOrder {
 	private Long id;
 	@OneToOne
 	private Product product;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	private Order order;
 	@Column(name ="quantity")
 	private Long quantity;
