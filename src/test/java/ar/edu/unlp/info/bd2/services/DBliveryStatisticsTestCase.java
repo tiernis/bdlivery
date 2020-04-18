@@ -38,11 +38,11 @@ public class DBliveryStatisticsTestCase {
     DBliveryServiceable service;
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
+/*
     @BeforeAll
     public void prepareDB() throws Exception {
         this.initializer.prepareDB();
-    }
+    }*/
 
     @Test
     public void testGetAllOrdersMadeByUser() {
@@ -83,6 +83,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(11,orders.size());
     }
 
+    //Como hacer diferencia logica.
     @Test
     public void testGetPendingOrders() {
         List<Order> orders = this.service.getPendingOrders();

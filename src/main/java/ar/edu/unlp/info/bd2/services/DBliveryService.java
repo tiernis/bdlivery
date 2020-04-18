@@ -6,9 +6,8 @@ import ar.edu.unlp.info.bd2.repositories.DBliveryRepository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DBliveryService implements DBliveryServiceable {
 
@@ -210,17 +209,15 @@ public class DBliveryService implements DBliveryServiceable {
         return orderConcrete.getActualStatus();
     }
 
-    @Override
     @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
     public List<Product> getProductByName(String name) {
         return repository.getProductByName(name);
     }
 
     public List<Order> getAllOrdersMadeByUser(String user) {
-        return null;
+        return this.repository.getAllOrdersMadeByUser(user);
     }
 
-    @Override
     public List<User> getUsersSpendingMoreThan(float quantity) {
         return null;
     }
@@ -247,6 +244,7 @@ public class DBliveryService implements DBliveryServiceable {
     }
 
     public List<Order> getPendingOrders() {
+        //List<Order> pendingOrders = this.repository.getPendingOrders();
         return null;
     }
 
@@ -295,7 +293,14 @@ public class DBliveryService implements DBliveryServiceable {
     }
 
     public List<Product> getSoldProductsOn(Date date) {
-        return null;
+        List<OrderStatus> solds = this.repository.getDeliveredOrdersFrom(date);
+        List<Product> productsSoldOnDate = new ArrayList<>();
+        for (OrderStatus temp_order : solds) {
+            for (ProductOrder temp_prod_ord : temp_order.getOrder().getProducts()){
+                productsSoldOnDate.add(temp_prod_ord.getProduct());
+            }
+        }
+        return productsSoldOnDate;
     }
 
     public List<Order> getOrdersCompleteMorethanOneDay() {

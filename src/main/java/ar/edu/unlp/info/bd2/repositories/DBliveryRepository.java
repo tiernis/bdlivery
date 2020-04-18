@@ -1,6 +1,7 @@
 package ar.edu.unlp.info.bd2.repositories;
 
 import ar.edu.unlp.info.bd2.model.Order;
+import ar.edu.unlp.info.bd2.model.OrderStatus;
 import ar.edu.unlp.info.bd2.model.Product;
 import ar.edu.unlp.info.bd2.model.User;
 import org.hibernate.SessionFactory;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -35,4 +38,19 @@ public class DBliveryRepository {
     public List<Order> getOrderById(Serializable id){
         return this.sessionFactory.getCurrentSession().createQuery("from Order where id = '" + id + "'").list();
     }
+
+    public List<OrderStatus> getDeliveredOrdersFrom(Date date) {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date_mod = simpleDateFormat.format(date);
+
+        return this.sessionFactory.getCurrentSession().createQuery("FROM OrderStatus WHERE status='Delivered' and date_status='"+date_mod+"'").list();
+    }
+
+    public List<Order> getAllOrdersMadeByUser(String username) {
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Order AS o INNER JOIN User AS u ON (o.client=u.id) WHERE username = '"+username+"'").list();
+    }
+
+    /*public List<Order> getPendingOrders() {
+    }*/
 }

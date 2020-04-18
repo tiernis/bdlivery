@@ -43,6 +43,7 @@ public class OrderStatus {
     public void setOrder(Order order) {
         this.order = order;
     }
+
     public String getStatus() {
         return status;
     }
