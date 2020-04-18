@@ -1,9 +1,5 @@
 package ar.edu.unlp.info.bd2.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 import javax.persistence.*;
@@ -21,9 +17,7 @@ public class Product {
 	private Float weight;
 	@OneToOne
 	private Supplier supplier;
-	@OneToMany(mappedBy = "product")
-	private List<ProductOrder> orders;
-	@OneToMany(mappedBy = "product")
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	private List<Price> allPrices = new ArrayList<>();
 
 	public Product(){
@@ -94,7 +88,7 @@ public class Product {
 	}
 
 	public Product updateProductPrice(Float price, Date date) {
-		Price new_price = new Price(price, date, this.getMe(), this.getSupplier());
+		Price new_price = new Price(price, date, this.getMe());
 		this.getPrices().add(new_price);
 		return this;
 	}

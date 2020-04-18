@@ -7,16 +7,12 @@ import java.util.Date;
 @Table(name = "OrderStatus")
 public class OrderStatus {
 
-    @EmbeddedId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
     private Long id;
-    @ManyToOne
-    @MapsId("order_id")
-    @JoinColumn(name = "order_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Order order;
-    @ManyToOne
-    @MapsId("user_id")
-    @JoinColumn(name = "user_id")
-    private User user;
     @Column(name = "status", unique=true, nullable = false)
     private String status;
     @Column(name = "date_status", unique=true, nullable = false)
@@ -26,10 +22,9 @@ public class OrderStatus {
 
     }
 
-    public OrderStatus(String status, Order order, User user, Date dateStatus){
+    public OrderStatus(String status, Order order, Date dateStatus){
         this.setStatus(status);
         this.setOrder(order);
-        this.setUser(user);
         this.setDateStatus(dateStatus);
     }
 
@@ -48,15 +43,6 @@ public class OrderStatus {
     public void setOrder(Order order) {
         this.order = order;
     }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public String getStatus() {
         return status;
     }

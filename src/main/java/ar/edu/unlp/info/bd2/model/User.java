@@ -1,14 +1,13 @@
 package ar.edu.unlp.info.bd2.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "User")
 public class User {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique=true, nullable = false)
@@ -23,8 +22,6 @@ public class User {
 	private String name;
 	@Column(name ="date_of_birth")
 	private Date dateOfBirth;
-	@OneToMany(mappedBy = "user")
-	private List<OrderStatus> statuses = new ArrayList<>();
 
 	public User(){}
 

@@ -6,15 +6,13 @@ import javax.persistence.*;
 @Table(name = "ProductOrder")
 public class ProductOrder {
 
-	@EmbeddedId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
-	@ManyToOne
-	@MapsId("product_id")
-	@JoinColumn(name = "product_id")
+	@OneToOne
 	private Product product;
-	@ManyToOne
-	@MapsId("order_id")
-	@JoinColumn(name = "order_id")
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Order order;
 	@Column(name ="quantity")
 	private Long quantity;

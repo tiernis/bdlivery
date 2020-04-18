@@ -1,11 +1,11 @@
 package ar.edu.unlp.info.bd2.model;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "Supplier")
 public class Supplier {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique=true, nullable = false)
@@ -20,8 +20,6 @@ public class Supplier {
 	private Float coordX;
 	@Column(name ="coory_supplier")
 	private Float coordY;
-	@OneToMany(mappedBy = "supplier")
-	private List<Price> allPrices;
 
 	public Supplier(){
 	}

@@ -8,16 +8,12 @@ import javax.persistence.*;
 @Table(name = "Price")
 public class Price {
 
-	@EmbeddedId
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
 	private Long id;
-	@ManyToOne
-	@MapsId("product_id")
-	@JoinColumn(name = "product_id")
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Product product;
-	@ManyToOne
-	@MapsId("supplier_id")
-	@JoinColumn(name = "supplier_id")
-	private Supplier supplier;
 	@Column(name ="price")
 	private Float price;
 	@Column(name ="startDate")
@@ -27,11 +23,10 @@ public class Price {
 
 	}
 	
-	public Price(Float price, Date startDate, Product product, Supplier supplier) {
+	public Price(Float price, Date startDate, Product product) {
 		this.setPrice(price);
 		this.setStartDate(startDate);
 		this.setProduct(product);
-		this.setSupplier(supplier);
 	}
 
 	public Long getId() {
@@ -48,14 +43,6 @@ public class Price {
 
 	public void setProduct(Product product) {
 		this.product = product;
-	}
-
-	public Supplier getSupplier() {
-		return supplier;
-	}
-
-	public void setSupplier(Supplier supplier) {
-		this.supplier = supplier;
 	}
 
 	public Float getPrice() {
