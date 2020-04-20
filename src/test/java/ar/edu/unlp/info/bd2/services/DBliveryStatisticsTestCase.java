@@ -63,27 +63,26 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(suppliers.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("La Trattoria", "Olivia Pizzas & Empanadas", "El Ladrillo", "Pizza Nova"));
     }
 
-    @Test
+    @Test//PASA
     public void testGetTop10MoreExpensiveProducts() {
         List<Product> products = this.service.getTop10MoreExpensiveProducts();
         assertEquals(9,products.size());
         this.assertListEquality(products.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("Maxi hamburguesa completa","Milanesa napolitana","Ensalada César","Ensalada waldorf","Milanesa de pollo napolitana sola","Sándwich de bondiola de cerdo completo","Lomo al roquefort","Tortilla a la española","Choripán"));
     }
 
-    @Test
+    @Test//CONSULTA ANDA PERO FALLA TRADUCCION A HQL
     public void testGetTop6UsersMoreOrders() {
         List<User> users = this.service.getTop6UsersMoreOrders();
         assertEquals(6,users.size());
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("maravega596","maramuoz97","eduardoalonso677","rubnpastor265","nataliocruz598","luzmartnez660"));
     }
 
-    @Test
+    @Test//PASA
     public void testGetCancelledOrdersInPeriod() throws ParseException {
         List<Order> orders = this.service.getCancelledOrdersInPeriod(sdf.parse("1/1/2014"),sdf.parse("31/12/2014"));
         assertEquals(11,orders.size());
     }
 
-    //Como hacer diferencia logica.
     @Test
     public void testGetPendingOrders() {
         List<Order> orders = this.service.getPendingOrders();

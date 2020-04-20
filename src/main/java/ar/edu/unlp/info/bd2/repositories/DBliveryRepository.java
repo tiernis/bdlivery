@@ -44,7 +44,7 @@ public class DBliveryRepository {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String date_mod = simpleDateFormat.format(date);
 
-        return this.sessionFactory.getCurrentSession().createQuery("FROM OrderStatus WHERE status='Delivered' and date_status='"+date_mod+"'").list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM OrderStatus WHERE status='Delivered' AND date_status='"+date_mod+"'").list();
     }
 
     public List<Order> getAllOrdersMadeByUser(String username) {
@@ -52,9 +52,14 @@ public class DBliveryRepository {
     }
 
     public List<Product> getTop10MoreExpensiveProducts() {
-        return this.sessionFactory.getCurrentSession().createQuery("SELECT prod FROM Product AS prod INNER JOIN Price AS price ON(prod.id = price.product) WHERE price.id IN (SELECT MAX(id) FROM Price GROUP BY product) ORDER BY price.price DESC").setMaxResults(9).list();
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT prod FROM Product AS prod INNER JOIN Price AS price ON(prod.id = price.product) WHERE price.id IN ( SELECT MAX(id) FROM Price GROUP BY product) ORDER BY price.price DESC").setMaxResults(9).list();
     }
 
-    /*public List<Order> getPendingOrders() {
-    }*/
+    public List<User> getTop6UsersMoreOrders() {
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT u.username, COUNT(Orders.*) AS q_order FROM User AS u INNER JOIN Order AS o ON(u.id = o.client) GROUP BY u.username ORDER BY q_order DESC").setMaxResults(6).list();
+    }
+
+    public List<Order> getPendingOrders() {
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o INNER JOIN OrderStatus AS os ON(o.id = os.order) WHERE os.order NOT IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status!='Pending')").list();
+    }
 }

@@ -249,16 +249,27 @@ LIMIT 4;
     }
 
     public List<User> getTop6UsersMoreOrders() {
-        return null;
+        /*
+        SELECT username, COUNT(o.id) AS q_order
+FROM User AS u INNER JOIN Orden AS o ON(u.id = o.client_id)
+GROUP BY username
+ORDER BY q_order DESC
+LIMIT 6;
+         */
+        return this.repository.getTop6UsersMoreOrders();
     }
 
     public List<Order> getCancelledOrdersInPeriod(Date start, Date end) {
+        /*
+        SELECT os.order_id
+FROM OrderStatus AS os
+WHERE os.status = 'Cancelled' AND os.date_status BETWEEN '2014-01-01' AND '2014-12-31';
+         */
         return null;
     }
 
     public List<Order> getPendingOrders() {
-        //List<Order> pendingOrders = this.repository.getPendingOrders();
-        return null;
+        return this.repository.getPendingOrders();
     }
 
     public List<Order> getSentOrders() {
