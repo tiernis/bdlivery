@@ -51,6 +51,10 @@ public class DBliveryRepository {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Order AS o INNER JOIN User AS u ON (o.client=u.id) WHERE username = '"+username+"'").list();
     }
 
+    public List<Product> getTop10MoreExpensiveProducts() {
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT prod FROM Product AS prod INNER JOIN Price AS price ON(prod.id = price.product) WHERE price.id IN (SELECT MAX(id) FROM Price GROUP BY product) ORDER BY price.price DESC").setMaxResults(9).list();
+    }
+
     /*public List<Order> getPendingOrders() {
     }*/
 }

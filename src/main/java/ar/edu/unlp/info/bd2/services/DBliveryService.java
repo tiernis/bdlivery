@@ -218,21 +218,34 @@ public class DBliveryService implements DBliveryServiceable {
         return this.repository.getAllOrdersMadeByUser(user);
     }
 
-    public List<User> getUsersSpendingMoreThan(float quantity) {
-        return null;
-    }
-
-    @Override
     public List<User> getUsersSpendingMoreThan(Float amount) {
+        /*SELECT SUM(quantity*price) AS Consumo, username
+FROM User AS u INNER JOIN Orden AS o ON(u.id = o.client_id)
+               INNER JOIN ProductOrder AS po ON(o.id = po.order_id)
+               INNER JOIN Price AS p ON(p.product_id = po.product_id)
+               INNER JOIN OrderStatus AS os ON(o.id = os.order_id)
+WHERE p.id IN (SELECT MAX(id) FROM Price GROUP BY product_id) AND os.status = 'Delivered'
+GROUP BY u.username HAVING SUM(quantity*price) > 6000
+ORDER BY Consumo;*/
         return null;
     }
 
     public List<Supplier> getTopNSuppliersInSentOrders(int quantity_suppliers) {
+        /*
+        SELECT name_supplier, SUM(quantity) AS quantity_products
+FROM Supplier AS s INNER JOIN Product AS p ON(s.id = p.id)
+		   INNER JOIN ProductOrder AS po ON(po.product_id = p.id)
+		   INNER JOIN OrderStatus AS os ON(os.order_id = po.order_id)
+WHERE status = 'Send'
+GROUP BY name_supplier HAVING SUM(quantity)
+ORDER BY quantity_products DESC
+LIMIT 4;
+         */
         return null;
     }
 
     public List<Product> getTop10MoreExpensiveProducts() {
-        return null;
+        return this.repository.getTop10MoreExpensiveProducts();
     }
 
     public List<User> getTop6UsersMoreOrders() {

@@ -44,19 +44,19 @@ public class DBliveryStatisticsTestCase {
         this.initializer.prepareDB();
     }*/
 
-    @Test
+    @Test//PASA
     public void testGetAllOrdersMadeByUser() {
         assertEquals(5,this.service.getAllOrdersMadeByUser("rubnpastor265").size());
     }
 
-    @Test
+    @Test//LA CONSULTA NO DEVUELVE LO ESPERADO
     public void testGetUsersSpendingMoreThan() {
         List<User> users = this.service.getUsersSpendingMoreThan(6000F);
         assertEquals(7,users.size());
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("alfredomartnez114","paulasez791","eduardomartin114","carlabentez531","nataliocastro278","florenciacastillo698","nataliomartnez928"));
     }
 
-    @Test
+    @Test//LA CONSULTA NO DEVUELVE LO ESPERADO
     public void testGetTopNSuppliers() {
         List<Supplier> suppliers = this.service.getTopNSuppliersInSentOrders(4);
         assertEquals(4,suppliers.size());
