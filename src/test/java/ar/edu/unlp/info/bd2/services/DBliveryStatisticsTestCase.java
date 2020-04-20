@@ -77,13 +77,13 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("maravega596","maramuoz97","eduardoalonso677","rubnpastor265","nataliocruz598","luzmartnez660"));
     }
 
-    @Test//PASA
+    @Test
     public void testGetCancelledOrdersInPeriod() throws ParseException {
         List<Order> orders = this.service.getCancelledOrdersInPeriod(sdf.parse("1/1/2014"),sdf.parse("31/12/2014"));
         assertEquals(11,orders.size());
     }
 
-    @Test
+    @Test//PASA
     public void testGetPendingOrders() {
         List<Order> orders = this.service.getPendingOrders();
         assertEquals(54,orders.size());

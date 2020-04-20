@@ -260,12 +260,7 @@ LIMIT 6;
     }
 
     public List<Order> getCancelledOrdersInPeriod(Date start, Date end) {
-        /*
-        SELECT os.order_id
-FROM OrderStatus AS os
-WHERE os.status = 'Cancelled' AND os.date_status BETWEEN '2014-01-01' AND '2014-12-31';
-         */
-        return null;
+        return this.repository.getCancelledOrdersInPeriod(start, end);
     }
 
     public List<Order> getPendingOrders() {

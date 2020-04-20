@@ -62,4 +62,13 @@ public class DBliveryRepository {
     public List<Order> getPendingOrders() {
         return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o INNER JOIN OrderStatus AS os ON(o.id = os.order) WHERE os.order NOT IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status!='Pending')").list();
     }
+
+    public List<Order> getCancelledOrdersInPeriod(Date start, Date end) {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date_start_mod = simpleDateFormat.format(start);
+        String date_end_mod = simpleDateFormat.format(end);
+
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Cancelled' AND os.dateStatus BETWEEN '"+ date_start_mod +"' AND '"+ date_end_mod +"'").list();
+    }
 }
