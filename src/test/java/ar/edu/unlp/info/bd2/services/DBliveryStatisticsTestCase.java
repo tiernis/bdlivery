@@ -78,7 +78,7 @@ public class DBliveryStatisticsTestCase {
     }
 
     @Test
-    public void testGetCancelledOrdersInPeriod() throws ParseException {
+    public void testGetCancelledOrdersInPeriod() throws ParseException {//PASA
         List<Order> orders = this.service.getCancelledOrdersInPeriod(sdf.parse("1/1/2014"),sdf.parse("31/12/2014"));
         assertEquals(11,orders.size());
     }
@@ -89,7 +89,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(54,orders.size());
     }
 
-    @Test
+    @Test//PASA
     public void testGetSentOrders() {
         List<Order> orders = this.service.getSentOrders();
         assertEquals(65,orders.size());

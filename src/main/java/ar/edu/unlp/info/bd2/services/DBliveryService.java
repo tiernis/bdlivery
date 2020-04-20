@@ -268,7 +268,7 @@ LIMIT 6;
     }
 
     public List<Order> getSentOrders() {
-        return null;
+        return this.repository.getSentOrders();
     }
 
     public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {

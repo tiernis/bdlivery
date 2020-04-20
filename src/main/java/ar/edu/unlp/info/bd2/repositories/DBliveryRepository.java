@@ -71,4 +71,8 @@ public class DBliveryRepository {
 
         return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Cancelled' AND os.dateStatus BETWEEN '"+ date_start_mod +"' AND '"+ date_end_mod +"'").list();
     }
+
+    public List<Order> getSentOrders() {
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o INNER JOIN OrderStatus AS os ON(o.id = os.order) WHERE os.status='Send' AND os.order NOT IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status!='Pending' AND os1.status!='Send')").list();
+    }
 }
