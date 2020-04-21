@@ -227,7 +227,7 @@ FROM User AS u INNER JOIN Orden AS o ON(u.id = o.client_id)
 WHERE p.id IN (SELECT MAX(id) FROM Price GROUP BY product_id) AND os.status = 'Delivered'
 GROUP BY u.username HAVING SUM(quantity*price) > 6000
 ORDER BY Consumo;*/
-        return null;
+        return this.repository.getUsersSpendingMoreThan(amount);
     }
 
     public List<Supplier> getTopNSuppliersInSentOrders(int quantity_suppliers) {
@@ -272,11 +272,11 @@ LIMIT 6;
     }
 
     public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {
-        return null;
+        return this.repository.getDeliveredOrdersInPeriod(start, end);
     }
 
-    public List<Order> getDeliveredOrdersForUser(String user) {
-        return null;
+    public List<Order> getDeliveredOrdersForUser(String username) {
+        return this.repository.getDeliveredOrdersForUser(username);
     }
 
     public List<Order> getSentMoreOneHour() {
@@ -284,7 +284,7 @@ LIMIT 6;
     }
 
     public List<Order> getDeliveredOrdersSameDay() {
-        return null;
+        return this.repository.getDeliveredOrdersSameDay();
     }
 
     public List<User> get5LessDeliveryUsers() {
@@ -304,7 +304,7 @@ LIMIT 6;
     }
 
     public Supplier getSupplierLessExpensiveProduct() {
-        return null;
+        return this.repository.getSupplierLessExpensiveProduct().get(0);
     }
 
     public List<Supplier> getSuppliersDoNotSellOn(Date date) {

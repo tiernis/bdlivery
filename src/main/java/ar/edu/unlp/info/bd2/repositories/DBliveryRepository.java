@@ -1,6 +1,7 @@
 package ar.edu.unlp.info.bd2.repositories;
 
 import ar.edu.unlp.info.bd2.model.Order;
+import ar.edu.unlp.info.bd2.model.Supplier;
 import ar.edu.unlp.info.bd2.model.OrderStatus;
 import ar.edu.unlp.info.bd2.model.Product;
 import ar.edu.unlp.info.bd2.model.User;
@@ -48,7 +49,7 @@ public class DBliveryRepository {
     }
 
     public List<Order> getAllOrdersMadeByUser(String username) {
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Order AS o INNER JOIN User AS u ON (o.client=u.id) WHERE username = '"+username+"'").list();
+        return this.sessionFactory.getCurrentSession().createQuery("select o FROM Order AS o INNER JOIN User AS u ON (o.client=u.id) WHERE username = '"+username+"'").list();
     }
 
     public List<Product> getTop10MoreExpensiveProducts() {
@@ -74,5 +75,35 @@ public class DBliveryRepository {
 
     public List<Order> getSentOrders() {
         return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o INNER JOIN OrderStatus AS os ON(o.id = os.order) WHERE os.status='Send' AND os.order NOT IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status!='Pending' AND os1.status!='Send')").list();
+    }
+    
+    public List<User> getUsersSpendingMoreThan(Float amount) {
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT u FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) WHERE o.cost> '"+amount+"'").list();
+    }
+    
+    public List<Order> getDeliveredOrdersInPeriod(Date start, Date end){
+    	String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date_start_mod = simpleDateFormat.format(start);
+        String date_end_mod = simpleDateFormat.format(end);
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Delivered' AND os.dateStatus BETWEEN '"+ date_start_mod +"' AND '"+ date_end_mod +"'").list();
+    }
+    
+    public List<Order> getDeliveredOrdersForUser(String username){
+    	Long idUser = this.getUserBy("username", username).get(0).getId();
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o INNER JOIN OrderStatus AS os ON (os.order=o.id) WHERE(os.status='Delivered' AND o.client='"+idUser+"')").list();
+    }
+    
+    public List<Order> getDeliveredOrdersSameDay(){
+    	return null;
+    }
+    
+    public List<Product> getProductLessExpensive(){
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT pro FROM Product AS pro INNER JOIN Price AS pri ON (pri.product=pro.id) ORDER BY pri.price").list();
+    }
+    
+    public List<Supplier> getSupplierLessExpensiveProduct(){
+    	Long productLE= this.getProductLessExpensive().get(0).getId();
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT s FROM Supplier AS s INNER JOIN Product AS p ON (s.id=p.supplier) WHERE (p.id='"+productLE+"') ").list();
     }
 }

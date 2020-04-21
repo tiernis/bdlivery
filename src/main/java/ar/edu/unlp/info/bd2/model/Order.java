@@ -25,6 +25,8 @@ public class Order {
 	private List<OrderStatus> status = new ArrayList<>();
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<ProductOrder> products = new ArrayList<>();
+	@Column(name ="cost")
+	private Float cost;
 
 	public Order(){
 
@@ -42,6 +44,14 @@ public class Order {
 		return this;
 	}
 
+	public Float getCost() {
+		return this.cost;
+	}
+
+	public void setId(Float cost) {
+		this.cost =cost;
+	}
+	
 	public Long getId() {
 		return this.id;
 	}
@@ -101,6 +111,7 @@ public class Order {
 	public Order addProduct (Long quantity, Product product) {
 		ProductOrder newProduct = new ProductOrder(quantity, product, this.getMe());
 		this.getProducts().add(newProduct);
+		this.cost= product.getPrice() * quantity;
 		return this;
 	}
 
