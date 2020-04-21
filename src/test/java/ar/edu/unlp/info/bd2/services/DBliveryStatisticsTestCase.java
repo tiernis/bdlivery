@@ -113,13 +113,13 @@ public class DBliveryStatisticsTestCase {
         assertEquals(123,orders.size());
     }
 
-    @Test
+    @Test//PASA
     public void testGetDeliveredOrdersSameDay() {
         List<Order> orders = this.service.getDeliveredOrdersSameDay();
         assertEquals(8,orders.size());
     }
 
-    @Test
+    @Test//CONSULTA ANDA PERO FALLA TRADUCCION A HQL
     public void testGet5LessDeliveryUsers() {
         List<User> users = this.service.get5LessDeliveryUsers();
         assertEquals(5,users.size());

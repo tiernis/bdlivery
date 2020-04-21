@@ -288,7 +288,7 @@ LIMIT 6;
     }
 
     public List<User> get5LessDeliveryUsers() {
-        return null;
+        return this.repository.get5LessDeliveryUsers();
     }
 
     public Product getBestSellingProduct() {
