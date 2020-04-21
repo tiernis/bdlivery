@@ -70,7 +70,7 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(products.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("Maxi hamburguesa completa","Milanesa napolitana","Ensalada César","Ensalada waldorf","Milanesa de pollo napolitana sola","Sándwich de bondiola de cerdo completo","Lomo al roquefort","Tortilla a la española","Choripán"));
     }
 
-    @Test//CONSULTA ANDA PERO FALLA TRADUCCION A HQL
+    @Test//PASA
     public void testGetTop6UsersMoreOrders() {
         List<User> users = this.service.getTop6UsersMoreOrders();
         assertEquals(6,users.size());
@@ -119,7 +119,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(8,orders.size());
     }
 
-    @Test//CONSULTA ANDA PERO FALLA TRADUCCION A HQL
+    @Test//PASA
     public void testGet5LessDeliveryUsers() {
         List<User> users = this.service.get5LessDeliveryUsers();
         assertEquals(5,users.size());

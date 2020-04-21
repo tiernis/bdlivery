@@ -250,7 +250,7 @@ LIMIT 4;
 
     public List<User> getTop6UsersMoreOrders() {
         /*
-        SELECT username, COUNT(o.id) AS q_order
+SELECT username, COUNT(o.id) AS q_order
 FROM User AS u INNER JOIN Orden AS o ON(u.id = o.client_id)
 GROUP BY username
 ORDER BY q_order DESC

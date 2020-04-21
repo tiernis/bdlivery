@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +58,12 @@ public class DBliveryRepository {
     }
 
     public List<User> getTop6UsersMoreOrders() {
-        return this.sessionFactory.getCurrentSession().createQuery("SELECT u.username, COUNT(*) AS q_order FROM User AS u INNER JOIN Order AS o ON(u.id = o.client) GROUP BY u.username ORDER BY q_order DESC").setMaxResults(6).list();
+        List<Object []> results = this.sessionFactory.getCurrentSession().createQuery("SELECT u, COUNT(o.id) AS q_order FROM User AS u INNER JOIN Order AS o ON(u.id = o.client) GROUP BY u ORDER BY q_order DESC").setMaxResults(6).list();
+        List<User> users = new ArrayList<>();
+        for (Object [] row : results) {
+            users.add((User) row[0]);
+        }
+        return users;
     }
 
     public List<Order> getPendingOrders() {
@@ -108,6 +114,11 @@ public class DBliveryRepository {
     }
 
     public List<User> get5LessDeliveryUsers() {
-        return this.sessionFactory.getCurrentSession().createQuery("SELECT u.username, COUNT(u) AS q_delivery FROM Order AS o INNER JOIN OrderStatus AS os ON(o.id=os.order) INNER JOIN User AS u ON(o.delivery=u.id) WHERE os.order IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status='Send') GROUP BY u.username ORDER BY username ASC").setMaxResults(5).list();
+        List<Object []> results = this.sessionFactory.getCurrentSession().createQuery("SELECT u, COUNT(u.id) AS q_delivery FROM Order AS o INNER JOIN OrderStatus AS os ON(o.id=os.order) INNER JOIN User AS u ON(o.delivery=u.id) WHERE os.order IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status='Send') GROUP BY u.id ORDER BY q_delivery ASC").setMaxResults(5).list();
+        List<User> users = new ArrayList<>();
+        for (Object [] row : results) {
+            users.add((User) row[0]);
+        }
+        return users;
     }
 }
