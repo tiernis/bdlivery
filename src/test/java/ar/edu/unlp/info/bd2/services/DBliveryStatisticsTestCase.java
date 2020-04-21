@@ -38,8 +38,8 @@ public class DBliveryStatisticsTestCase {
     DBliveryServiceable service;
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-/*
-    @BeforeAll
+
+    /*@BeforeAll
     public void prepareDB() throws Exception {
         this.initializer.prepareDB();
     }*/
@@ -77,7 +77,7 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("maravega596","maramuoz97","eduardoalonso677","rubnpastor265","nataliocruz598","luzmartnez660"));
     }
 
-    @Test
+    @Test//PASA
     public void testGetCancelledOrdersInPeriod() throws ParseException {//PASA
         List<Order> orders = this.service.getCancelledOrdersInPeriod(sdf.parse("1/1/2014"),sdf.parse("31/12/2014"));
         assertEquals(11,orders.size());
@@ -95,19 +95,19 @@ public class DBliveryStatisticsTestCase {
         assertEquals(65,orders.size());
     }
 
-    @Test
+    @Test//PASA
     public void testGetDeliveredOrdersInPeriod() throws ParseException {
         List<Order> orders = this.service.getDeliveredOrdersInPeriod(sdf.parse("1/1/2013"),sdf.parse("31/12/2013"));
         assertEquals(18,orders.size());
     }
 
-    @Test
+    @Test//PASA
     public void testGetDeliveredOrdersForUser() {
         List<Order> orders = this.service.getDeliveredOrdersForUser("luzmartnez660");
         assertEquals(3,orders.size());
     }
 
-    @Test
+    @Test//PREGUNTAR
     public void testGetSentMoreOneHour() {
         List<Order> orders = this.service.getSentMoreOneHour();
         assertEquals(123,orders.size());
@@ -145,7 +145,7 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(products.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("Sorrentinos de jamón y queso mozzarella","Sándwich de bondiola de cerdo, lechuga y tomate","Papas fritas con cheddar y panceta","Bondiola de cerdo a la riojana","Tabla fritas y fiambre","Ravioles de verdura"));
     }
 
-    @Test
+    @Test//PASA
     public void testGetSupplierLessExpensiveProduct() {
         assertEquals("Pancho Crazy", this.service.getSupplierLessExpensiveProduct().getName());
     }

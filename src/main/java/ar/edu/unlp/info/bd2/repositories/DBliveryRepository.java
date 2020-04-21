@@ -95,7 +95,7 @@ public class DBliveryRepository {
     }
     
     public List<Order> getDeliveredOrdersSameDay(){
-    	return null;
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o INNER JOIN OrderStatus AS os ON (os.order=o.id) WHERE os.status='Pending' AND os.order IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status='Delivered' AND os.dateStatus=os1.dateStatus)").list();
     }
     
     public List<Product> getProductLessExpensive(){
