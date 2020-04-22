@@ -56,7 +56,7 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("alfredomartnez114","paulasez791","eduardomartin114","carlabentez531","nataliocastro278","florenciacastillo698","nataliomartnez928"));
     }
 
-    @Test//LA CONSULTA NO DEVUELVE LO ESPERADO
+    @Test//PASA
     public void testGetTopNSuppliers() {
         List<Supplier> suppliers = this.service.getTopNSuppliersInSentOrders(4);
         assertEquals(4,suppliers.size());
@@ -126,19 +126,19 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("luzpascual621","carlasantana949","juantorres331","rubnpastor499","mariorubio577"));
     }
 
-    @Test
+    @Test//ME ACERQUE BASTANTE, CONSULTAR
     public void testGetBestSellingProduct() {
         Product product = this.service.getBestSellingProduct();
         assertEquals("Pizza napolitana",product.getName());
     }
 
-    @Test
+    @Test//PASA
     public void testGetProductsOnePrice() {
         List<Product> products = this.service.getProductsOnePrice();
         assertEquals(27, products.size());
     }
 
-    @Test
+    @Test//PEDIR AYUDA
     public void testGetProductIncreaseMoreThan100() {
         List<Product> products = this.service.getProductIncreaseMoreThan100();
         assertEquals(6, products.size());
@@ -150,26 +150,26 @@ public class DBliveryStatisticsTestCase {
         assertEquals("Pancho Crazy", this.service.getSupplierLessExpensiveProduct().getName());
     }
 
-    @Test
+    @Test//PASA
     public void testGetSuppliersDoNotSellOn() throws ParseException {
         List<Supplier> suppliers = this.service.getSuppliersDoNotSellOn(sdf.parse("28/2/2010"));
         assertEquals(7,suppliers.size());
         this.assertListEquality(suppliers.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("La Trattoria","Pancho Crazy","Kentucky","La Bodeguita","Foodie Special Burger","Lo de Carlos","Burger Bar"));
     }
 
-    @Test
+    @Test//FALLA EN ASSERT
     public void testGetSoldProductsOn() throws ParseException {
         List<Product> products = this.service.getSoldProductsOn(sdf.parse("28/2/2010"));
         assertEquals(4, products.size());
         this.assertListEquality(products.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("Filet de merluza a la romana","Bife de chorizo grillado","Milanesa americana","Ensalada de hojas verdes y queso"));
     }
 
-    @Test
+    @Test//PREGUNTAR AL AYUDANTE
     public void testGetOrdersCompleteMorethanOneDay() {
         assertEquals(99, this.service.getOrdersCompleteMorethanOneDay().size());
     }
 
-    @Test
+    @Test//RESULTADOS TESTS RAROS. PREGUNTAR AL AYUDANTE
     public void testGetProductsWithPriceAt() throws ParseException {
         List<Object[]> prices = this.service.getProductsWithPriceAt(sdf.parse("28/2/2013"));
         assertEquals(110, prices.size());
@@ -181,7 +181,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(227.0F, prices.get(98)[1]);
     }
 
-    @Test
+    @Test//PASA
     public void testGetProductsNotSold() {
         List<Product> products = this.service.getProductsNotSold();
         assertEquals(5,products.size());
@@ -200,7 +200,7 @@ public class DBliveryStatisticsTestCase {
 
     @Test
     public void testOrderAmount() {
-        Optional<Order> ord = this.service.getOrderById(Long.getLong("77"));
+        Optional<Order> ord = this.service.getOrderById(Long.getLong("77",77));
         if (ord.isPresent()) {
             Order o = ord.get();
             assertEquals(Float.valueOf("2454"),o.getAmount());

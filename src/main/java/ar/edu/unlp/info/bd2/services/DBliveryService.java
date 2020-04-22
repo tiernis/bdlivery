@@ -231,16 +231,6 @@ ORDER BY Consumo;*/
     }
 
     public List<Supplier> getTopNSuppliersInSentOrders(int quantity_suppliers) {
-        /*
-        SELECT name_supplier, SUM(quantity) AS quantity_products
-FROM Supplier AS s INNER JOIN Product AS p ON(s.id = p.id)
-		   INNER JOIN ProductOrder AS po ON(po.product_id = p.id)
-		   INNER JOIN OrderStatus AS os ON(os.order_id = po.order_id)
-WHERE status = 'Send'
-GROUP BY name_supplier HAVING SUM(quantity)
-ORDER BY quantity_products DESC
-LIMIT 4;
-         */
         return this.repository.getTopNSuppliersInSentOrders(quantity_suppliers);
     }
 
@@ -249,13 +239,6 @@ LIMIT 4;
     }
 
     public List<User> getTop6UsersMoreOrders() {
-        /*
-SELECT username, COUNT(o.id) AS q_order
-FROM User AS u INNER JOIN Orden AS o ON(u.id = o.client_id)
-GROUP BY username
-ORDER BY q_order DESC
-LIMIT 6;
-         */
         return this.repository.getTop6UsersMoreOrders();
     }
 
@@ -292,6 +275,13 @@ LIMIT 6;
     }
 
     public Product getBestSellingProduct() {
+        /*
+        SELECT p.name_product, SUM(po.quantity) AS cantidad_pedidos
+FROM ProductOrder AS po INNER JOIN Product AS p ON(po.product_id = p.id)
+GROUP BY p.name_product
+ORDER BY cantidad_pedidos DESC
+LIMIT 1;
+         */
         return null;
     }
 

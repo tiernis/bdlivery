@@ -162,6 +162,12 @@ public class Order {
 	}
 
 	public Float getAmount() {
-		return null;
+		/*Float precioTotal = 0F;
+
+		for(ProductOrder po : this.getProducts()) {
+			precioTotal += po.getProduct().getPrice() * po.getQuantity();
+		};
+		return precioTotal;*/
+		return this.getCost();
 	}
 }
