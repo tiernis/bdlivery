@@ -84,7 +84,8 @@ public class DBliveryRepository {
     }
 
     public List<User> getUsersSpendingMoreThan(Float amount) {
-        return this.sessionFactory.getCurrentSession().createQuery("SELECT u FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) WHERE o.cost> '" + amount + "'").list();
+    	//SELECT u  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') AND ((o.cost) > '" + amount + "')"
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT u, SUM(o.cost)  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') GROUP BY u.id HAVING (SUM(o.cost) > '" + amount + "')").list();
     }
 
     public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {
@@ -120,5 +121,25 @@ public class DBliveryRepository {
             users.add((User) row[0]);
         }
         return users;
+    }
+    
+    public List<Product> getProductsOnePrice() {
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT pro FROM Price AS pri INNER JOIN Product AS pro ON (pri.product=pro.id) GROUP BY pri.product HAVING COUNT(*)=1").list();
+    }
+    
+    public List<Supplier> getTopNSuppliersInSentOrders(int n){
+    	//"SELECT s FROM ProductOrder po INNER JOIN Product p ON (po.product=p.id) INNER JOIN Supplier s ON (p.supplier=s.id) INNER JOIN OrderStatus os ON (os.order=po.order) WHERE os.status='Send' AND os.order NOT IN(SELECT os1.order FROM OrderStatus AS os1 WHERE os1.status!='Pending' AND os1.status!='Send') GROUP BY s.id ORDER BY COUNT(*) DESC"
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT s FROM ProductOrder po INNER JOIN Product p ON (po.product=p.id) INNER JOIN Supplier s ON (p.supplier=s.id) INNER JOIN OrderStatus os ON (os.order=po.order) WHERE os.status='Send' GROUP BY s.id ORDER BY COUNT(*) DESC").setMaxResults(n).list();
+    }
+    
+    public List<Supplier> getSuppliersDoNotSellOn(Date day){
+    	String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String day_mod = simpleDateFormat.format(day);
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT s FROM Supplier AS s WHERE s NOT IN (SELECT p.supplier FROM Order AS o INNER JOIN ProductOrder AS po ON (o.id=po.order) INNER JOIN Product AS p ON (p.id=po.product) INNER JOIN OrderStatus AS os ON (o.id=os.order) WHERE (os.dateStatus='"+day_mod+"'))").list();
+    }
+    
+    public List<Product> getProductsNotSold(){
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT p FROM Product AS p WHERE p NOT IN (SELECT po.product FROM ProductOrder AS po) ").list();
     }
 }

@@ -241,7 +241,7 @@ GROUP BY name_supplier HAVING SUM(quantity)
 ORDER BY quantity_products DESC
 LIMIT 4;
          */
-        return null;
+        return this.repository.getTopNSuppliersInSentOrders(quantity_suppliers);
     }
 
     public List<Product> getTop10MoreExpensiveProducts() {
@@ -296,7 +296,7 @@ LIMIT 6;
     }
 
     public List<Product> getProductsOnePrice() {
-        return null;
+        return this.repository.getProductsOnePrice();
     }
 
     public List<Product> getProductIncreaseMoreThan100() {
@@ -307,8 +307,8 @@ LIMIT 6;
         return this.repository.getSupplierLessExpensiveProduct().get(0);
     }
 
-    public List<Supplier> getSuppliersDoNotSellOn(Date date) {
-        return null;
+    public List<Supplier> getSuppliersDoNotSellOn(Date day) {
+        return this.repository.getSuppliersDoNotSellOn(day);
     }
 
     public List<Product> getSoldProductsOn(Date date) {
@@ -331,7 +331,7 @@ LIMIT 6;
     }
 
     public List<Product> getProductsNotSold() {
-        return null;
+        return this.repository.getProductsNotSold();
     }
 
     public List<Order> getOrderWithMoreQuantityOfProducts(Date date) {

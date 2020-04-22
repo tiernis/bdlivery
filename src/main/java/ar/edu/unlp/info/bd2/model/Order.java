@@ -38,6 +38,7 @@ public class Order {
 		this.setCoordY(coordY);
 		this.setClient(client);
 		this.addOrderStatus("Pending", dateOfOrder);
+		this.cost=0F;
 	}
 
 	public Order getMe(){
@@ -48,7 +49,7 @@ public class Order {
 		return this.cost;
 	}
 
-	public void setId(Float cost) {
+	public void setCost(Float cost) {
 		this.cost =cost;
 	}
 	
@@ -111,7 +112,8 @@ public class Order {
 	public Order addProduct (Long quantity, Product product) {
 		ProductOrder newProduct = new ProductOrder(quantity, product, this.getMe());
 		this.getProducts().add(newProduct);
-		this.cost= product.getPrice() * quantity;
+		Float newProductCost=product.getPrice() * quantity.floatValue();
+		this.setCost(this.getCost() + newProductCost);
 		return this;
 	}
 
