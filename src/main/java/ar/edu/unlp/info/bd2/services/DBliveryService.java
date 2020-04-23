@@ -282,7 +282,7 @@ GROUP BY p.name_product
 ORDER BY cantidad_pedidos DESC
 LIMIT 1;
          */
-        return null;
+        return this.repository.getBestSellingProducts().get(0);
     }
 
     public List<Product> getProductsOnePrice() {
@@ -317,7 +317,7 @@ LIMIT 1;
     }
 
     public List<Object[]> getProductsWithPriceAt(Date date) {
-        return null;
+        return repository.getProductsWithPriceAt(date);
     }
 
     public List<Product> getProductsNotSold() {
@@ -325,6 +325,6 @@ LIMIT 1;
     }
 
     public List<Order> getOrderWithMoreQuantityOfProducts(Date date) {
-        return null;
+        return repository.getOrderWithMoreQuantityOfProducts(date);
     }
 }

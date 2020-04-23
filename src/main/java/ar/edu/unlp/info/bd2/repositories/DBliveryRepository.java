@@ -71,10 +71,8 @@ public class DBliveryRepository {
     }
 
     public List<Order> getCancelledOrdersInPeriod(Date start, Date end) {
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date_start_mod = simpleDateFormat.format(start);
-        String date_end_mod = simpleDateFormat.format(end);
+        String date_start_mod = this.ConvertDay(start);
+        String date_end_mod = this.ConvertDay(end);
 
         return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Cancelled' AND os.dateStatus BETWEEN '" + date_start_mod + "' AND '" + date_end_mod + "'").list();
     }
@@ -89,10 +87,8 @@ public class DBliveryRepository {
     }
 
     public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date_start_mod = simpleDateFormat.format(start);
-        String date_end_mod = simpleDateFormat.format(end);
+        String date_start_mod = this.ConvertDay(start);
+        String date_end_mod = this.ConvertDay(end);
         return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Delivered' AND os.dateStatus BETWEEN '" + date_start_mod + "' AND '" + date_end_mod + "'").list();
     }
 
@@ -133,13 +129,34 @@ public class DBliveryRepository {
     }
     
     public List<Supplier> getSuppliersDoNotSellOn(Date day){
-    	String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String day_mod = simpleDateFormat.format(day);
+        String day_mod = this.ConvertDay(day);
     	return this.sessionFactory.getCurrentSession().createQuery("SELECT s FROM Supplier AS s WHERE s NOT IN (SELECT p.supplier FROM Order AS o INNER JOIN ProductOrder AS po ON (o.id=po.order) INNER JOIN Product AS p ON (p.id=po.product) INNER JOIN OrderStatus AS os ON (o.id=os.order) WHERE (os.dateStatus='"+day_mod+"'))").list();
     }
     
     public List<Product> getProductsNotSold(){
     	return this.sessionFactory.getCurrentSession().createQuery("SELECT p FROM Product AS p WHERE p NOT IN (SELECT po.product FROM ProductOrder AS po) ").list();
+    }
+    
+    public List<Product> getBestSellingProducts() {
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT p FROM Product AS p INNER JOIN ProductOrder AS po ON (po.product=p.id) GROUP BY p.id ORDER BY COUNT(*) DESC").list();
+    }
+    
+    public List<Order> getOrderWithMoreQuantityOfProducts(Date day){
+        String day_mod = this.ConvertDay(day);
+    	List<Order> ordermq = this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM ProductOrder AS po INNER JOIN Order AS o ON (po.order=o.id) WHERE o IN(SELECT os.order FROM OrderStatus AS os WHERE (os.dateStatus='"+day_mod+"')) GROUP BY o.id ORDER BY COUNT(*) DESC").list();
+    	Long idOrder = ordermq.get(0).getId();
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o WHERE o.id='"+idOrder+"'").list();
+    }
+    
+    public List<Object[]> getProductsWithPriceAt(Date day){
+    	
+        String day_mod = this.ConvertDay(day);
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT pro, pri.price FROM Product AS pro INNER JOIN Price AS pri ON (pro.id=pri.product) WHERE (pri.startDate <= '"+day_mod+"')").list();
+    }
+    
+    public String ConvertDay(Date day) {
+    	String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(day);
     }
 }
