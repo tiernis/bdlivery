@@ -41,14 +41,6 @@ public class DBliveryRepository {
         return this.sessionFactory.getCurrentSession().createQuery("from Order where id = '" + id + "'").list();
     }
 
-    public List<OrderStatus> getDeliveredOrdersFrom(Date date) {
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date_mod = simpleDateFormat.format(date);
-
-        return this.sessionFactory.getCurrentSession().createQuery("FROM OrderStatus WHERE status='Delivered' AND date_status='" + date_mod + "'").list();
-    }
-
     public List<Order> getAllOrdersMadeByUser(String username) {
         return this.sessionFactory.getCurrentSession().createQuery("select o FROM Order AS o INNER JOIN User AS u ON (o.client=u.id) WHERE username = '" + username + "'").list();
     }
@@ -71,8 +63,8 @@ public class DBliveryRepository {
     }
 
     public List<Order> getCancelledOrdersInPeriod(Date start, Date end) {
-        String date_start_mod = this.ConvertDay(start);
-        String date_end_mod = this.ConvertDay(end);
+        String date_start_mod = this.convertDay(start);
+        String date_end_mod = this.convertDay(end);
 
         return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Cancelled' AND os.dateStatus BETWEEN '" + date_start_mod + "' AND '" + date_end_mod + "'").list();
     }
@@ -83,12 +75,12 @@ public class DBliveryRepository {
 
     public List<User> getUsersSpendingMoreThan(Float amount) {
     	//SELECT u  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') AND ((o.cost) > '" + amount + "')"
-        return this.sessionFactory.getCurrentSession().createQuery("SELECT u, SUM(o.cost)  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') GROUP BY u.id HAVING (SUM(o.cost) > '" + amount + "')").list();
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT u, SUM(o.cost)  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') GROUP BY u.id HAVING (SUM(o.cost) >= '" + amount + "')").list();
     }
 
     public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {
-        String date_start_mod = this.ConvertDay(start);
-        String date_end_mod = this.ConvertDay(end);
+        String date_start_mod = this.convertDay(start);
+        String date_end_mod = this.convertDay(end);
         return this.sessionFactory.getCurrentSession().createQuery("SELECT os FROM OrderStatus AS os WHERE os.status = 'Delivered' AND os.dateStatus BETWEEN '" + date_start_mod + "' AND '" + date_end_mod + "'").list();
     }
 
@@ -129,7 +121,7 @@ public class DBliveryRepository {
     }
     
     public List<Supplier> getSuppliersDoNotSellOn(Date day){
-        String day_mod = this.ConvertDay(day);
+        String day_mod = this.convertDay(day);
     	return this.sessionFactory.getCurrentSession().createQuery("SELECT s FROM Supplier AS s WHERE s NOT IN (SELECT p.supplier FROM Order AS o INNER JOIN ProductOrder AS po ON (o.id=po.order) INNER JOIN Product AS p ON (p.id=po.product) INNER JOIN OrderStatus AS os ON (o.id=os.order) WHERE (os.dateStatus='"+day_mod+"'))").list();
     }
     
@@ -142,7 +134,7 @@ public class DBliveryRepository {
     }
     
     public List<Order> getOrderWithMoreQuantityOfProducts(Date day){
-        String day_mod = this.ConvertDay(day);
+        String day_mod = this.convertDay(day);
     	List<Order> ordermq = this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM ProductOrder AS po INNER JOIN Order AS o ON (po.order=o.id) WHERE o IN(SELECT os.order FROM OrderStatus AS os WHERE (os.dateStatus='"+day_mod+"')) GROUP BY o.id ORDER BY COUNT(*) DESC").list();
     	Long idOrder = ordermq.get(0).getId();
     	return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o WHERE o.id='"+idOrder+"'").list();
@@ -150,13 +142,18 @@ public class DBliveryRepository {
     
     public List<Object[]> getProductsWithPriceAt(Date day){
     	
-        String day_mod = this.ConvertDay(day);
+        String day_mod = this.convertDay(day);
     	return this.sessionFactory.getCurrentSession().createQuery("SELECT pro, pri.price FROM Product AS pro INNER JOIN Price AS pri ON (pro.id=pri.product) WHERE (pri.startDate <= '"+day_mod+"')").list();
     }
     
-    public String ConvertDay(Date day) {
+    public String convertDay(Date day) {
     	String pattern = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(day);
+    }
+    
+    public List<Product> getSoldProductsOn(Date day){
+    	String day_mod= this.convertDay(day);
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT p FROM ProductOrder AS po INNER JOIN Order AS o ON (o.id=po.order) INNER JOIN Product AS p ON (po.product=p.id) WHERE o IN (SELECT os.order FROM OrderStatus AS os WHERE (os.dateStatus='"+day_mod+"'))").list();
     }
 }

@@ -302,14 +302,7 @@ LIMIT 1;
     }
 
     public List<Product> getSoldProductsOn(Date date) {
-        List<OrderStatus> solds = this.repository.getDeliveredOrdersFrom(date);
-        List<Product> productsSoldOnDate = new ArrayList<>();
-        for (OrderStatus temp_order : solds) {
-            for (ProductOrder temp_prod_ord : temp_order.getOrder().getProducts()){
-                productsSoldOnDate.add(temp_prod_ord.getProduct());
-            }
-        }
-        return productsSoldOnDate;
+    	return this.repository.getSoldProductsOn(date);
     }
 
     public List<Order> getOrdersCompleteMorethanOneDay() {
