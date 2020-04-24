@@ -75,7 +75,7 @@ public class DBliveryRepository {
 
     public List<User> getUsersSpendingMoreThan(Float amount) {
     	//SELECT u  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') AND ((o.cost) > '" + amount + "')"
-        return this.sessionFactory.getCurrentSession().createQuery("SELECT u, SUM(o.cost)  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') GROUP BY u.id HAVING (SUM(o.cost) >= '" + amount + "')").list();
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT u  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) WHERE ((o.cost) > '" + amount + "')").list();
     }
 
     public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {
