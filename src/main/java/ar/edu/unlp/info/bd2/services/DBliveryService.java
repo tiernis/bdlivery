@@ -306,7 +306,7 @@ LIMIT 1;
     }
 
     public List<Order> getOrdersCompleteMorethanOneDay() {
-        return null;
+        return this.repository.getOrdersCompleteMorethanOneDay();
     }
 
     public List<Object[]> getProductsWithPriceAt(Date date) {

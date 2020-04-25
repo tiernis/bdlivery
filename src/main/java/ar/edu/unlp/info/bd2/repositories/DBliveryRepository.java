@@ -164,4 +164,8 @@ public class DBliveryRepository {
     public List<Order> getSentMoreOneHour() {
         return this.sessionFactory.getCurrentSession().createQuery("SELECT o1 FROM OrderStatus AS os1 INNER JOIN Order AS o1 ON (os1.order = o1.id) WHERE os1.status = 'Send' AND os1.order IN (SELECT os2.order FROM OrderStatus AS os2 WHERE (os1.dateStatus - os2.dateStatus) > 1)").list();
     }
+
+    public List<Order> getOrdersCompleteMorethanOneDay() {
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT o1 FROM OrderStatus AS os1 INNER JOIN Order AS o1 ON(os1.order = o1.id) WHERE os1.status = 'Delivered' AND os1.order IN (SELECT os2.order FROM OrderStatus AS os2 WHERE (os1.dateStatus - os2.dateStatus) > 1)").list();
+    }
 }
