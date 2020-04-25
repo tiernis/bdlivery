@@ -107,7 +107,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(3,orders.size());
     }
 
-    @Test//PREGUNTAR
+    @Test//EXISTE CONSULTA
     public void testGetSentMoreOneHour() {
         List<Order> orders = this.service.getSentMoreOneHour();
         assertEquals(123,orders.size());
@@ -138,7 +138,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(27, products.size());
     }
 
-    @Test//EXISTE CONSULTA
+    @Test//PASA
     public void testGetProductIncreaseMoreThan100() {
         List<Product> products = this.service.getProductIncreaseMoreThan100();
         assertEquals(6, products.size());

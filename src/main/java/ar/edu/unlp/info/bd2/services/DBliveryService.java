@@ -263,7 +263,7 @@ ORDER BY Consumo;*/
     }
 
     public List<Order> getSentMoreOneHour() {
-        return null;
+        return this.repository.getSentMoreOneHour();
     }
 
     public List<Order> getDeliveredOrdersSameDay() {
