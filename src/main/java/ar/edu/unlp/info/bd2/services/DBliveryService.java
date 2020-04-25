@@ -54,7 +54,7 @@ public class DBliveryService implements DBliveryServiceable {
     public Product updateProductPrice(Long id, Float price, Date startDate) throws DBliveryException {
         if(this.repository.getProductById(id).size() != 0) {
             Product product = this.repository.getProductById(id).get(0);
-            product.updateProductPrice(price, new Date());
+            product.updateProductPrice(price, startDate);
             repository.save(product);
             return product;
         }else {throw new DBliveryException("The product don't exist");}
@@ -290,7 +290,7 @@ LIMIT 1;
     }
 
     public List<Product> getProductIncreaseMoreThan100() {
-        return null;
+        return this.repository.getProductIncreaseMoreThan100();
     }
 
     public Supplier getSupplierLessExpensiveProduct() {

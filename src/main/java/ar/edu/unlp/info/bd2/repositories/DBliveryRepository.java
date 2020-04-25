@@ -74,7 +74,7 @@ public class DBliveryRepository {
     }
 
     public List<User> getUsersSpendingMoreThan(Float amount) {
-    	//SELECT u  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') AND ((o.cost) > '" + amount + "')"
+    	//SELECT u FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) INNER JOIN OrderStatus os ON (o.id=os.order) WHERE (os.status='Delivered') AND ((o.cost) > '" + amount + "')"
         return this.sessionFactory.getCurrentSession().createQuery("SELECT u  FROM Order AS o INNER JOIN User AS u ON(u.id=o.client) WHERE ((o.cost) > '" + amount + "')").list();
     }
 
@@ -155,5 +155,9 @@ public class DBliveryRepository {
     public List<Product> getSoldProductsOn(Date day){
     	String day_mod= this.convertDay(day);
     	return this.sessionFactory.getCurrentSession().createQuery("SELECT p FROM ProductOrder AS po INNER JOIN Order AS o ON (o.id=po.order) INNER JOIN Product AS p ON (po.product=p.id) WHERE o IN (SELECT os.order FROM OrderStatus AS os WHERE (os.dateStatus='"+day_mod+"'))").list();
+    }
+
+    public List<Product> getProductIncreaseMoreThan100() {
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT prod FROM Price AS pri1 INNER JOIN Product AS prod ON(prod.id = pri1.product) WHERE pri1.product IN (SELECT pri2.product FROM Price AS pri2 WHERE pri1.price*2 < pri2.price)").list();
     }
 }

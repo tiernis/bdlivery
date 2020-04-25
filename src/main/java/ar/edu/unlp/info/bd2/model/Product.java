@@ -92,11 +92,11 @@ public class Product {
 		this.getPrices().add(new_price);
 		return this;
 	}
-	
+
 	public Float getPriceAt(Date day) {
 		Float pricesAt=0F;
 		for (int i = 0; i< this.getPrices().size(); i++) {
-			if(this.getPrices().get(i).getStartDate().compareTo(day) <= 0) {
+			if(this.getPrices().get(i).getStartDate().before(day)) {
 				pricesAt=this.getPrices().get(i).getPrice();
 			}
 		}

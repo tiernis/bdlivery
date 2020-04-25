@@ -138,7 +138,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(27, products.size());
     }
 
-    @Test//PEDIR AYUDA
+    @Test//EXISTE CONSULTA
     public void testGetProductIncreaseMoreThan100() {
         List<Product> products = this.service.getProductIncreaseMoreThan100();
         assertEquals(6, products.size());
@@ -199,7 +199,7 @@ public class DBliveryStatisticsTestCase {
     }
 
     @Test
-    public void testOrderAmount() {
+    public void testOrderAmount() {//PASA
         Optional<Order> ord = this.service.getOrderById(Long.getLong("77",77));
         if (ord.isPresent()) {
             Order o = ord.get();
