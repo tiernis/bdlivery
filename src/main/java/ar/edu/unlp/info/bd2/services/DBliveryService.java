@@ -275,13 +275,6 @@ ORDER BY Consumo;*/
     }
 
     public Product getBestSellingProduct() {
-        /*
-        SELECT p.name_product, SUM(po.quantity) AS cantidad_pedidos
-FROM ProductOrder AS po INNER JOIN Product AS p ON(po.product_id = p.id)
-GROUP BY p.name_product
-ORDER BY cantidad_pedidos DESC
-LIMIT 1;
-         */
         return this.repository.getBestSellingProducts().get(0);
     }
 

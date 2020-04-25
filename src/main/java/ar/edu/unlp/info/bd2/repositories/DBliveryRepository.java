@@ -141,9 +141,8 @@ public class DBliveryRepository {
     }
     
     public List<Object[]> getProductsWithPriceAt(Date day){
-    	
         String day_mod = this.convertDay(day);
-    	return this.sessionFactory.getCurrentSession().createQuery("SELECT pro, pri.price FROM Product AS pro INNER JOIN Price AS pri ON (pro.id=pri.product) WHERE (pri.startDate <= '"+day_mod+"')").list();
+    	return this.sessionFactory.getCurrentSession().createQuery("SELECT prod, pri1.price FROM Product AS prod INNER JOIN Price AS pri1 ON (prod.id = pri1.product) WHERE pri1.id IN(SELECT MAX(pri2.id) FROM Price AS pri2 WHERE pri2.startDate <= '"+day_mod+"' GROUP BY pri2.product)").list();
     }
     
     public String convertDay(Date day) {
