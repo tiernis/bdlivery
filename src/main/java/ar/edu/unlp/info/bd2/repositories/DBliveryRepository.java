@@ -135,9 +135,7 @@ public class DBliveryRepository {
     
     public List<Order> getOrderWithMoreQuantityOfProducts(Date day){
         String day_mod = this.convertDay(day);
-    	List<Order> ordermq = this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM ProductOrder AS po INNER JOIN Order AS o ON (po.order=o.id) WHERE o IN(SELECT os.order FROM OrderStatus AS os WHERE (os.dateStatus='"+day_mod+"')) GROUP BY o.id ORDER BY COUNT(*) DESC").list();
-    	Long idOrder = ordermq.get(0).getId();
-    	return this.sessionFactory.getCurrentSession().createQuery("SELECT o FROM Order AS o WHERE o.id='"+idOrder+"'").list();
+        return this.sessionFactory.getCurrentSession().createQuery("SELECT o1 FROM ProductOrder AS po1 INNER JOIN OrderStatus AS os1 ON(po1.order = os1.order) INNER JOIN Order AS o1 ON(po1.order = o1.id) WHERE po1.quantity IN(SELECT MAX(quantity) FROM ProductOrder AS po2 WHERE os1.dateStatus = '"+day_mod+"') AND os1.dateStatus = '"+day_mod+"' GROUP BY quantity, po1.order").list();
     }
     
     public List<Object[]> getProductsWithPriceAt(Date day){

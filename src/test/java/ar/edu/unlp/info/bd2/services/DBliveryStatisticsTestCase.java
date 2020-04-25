@@ -126,7 +126,7 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(users.stream().map(property -> property.getUsername()).collect(Collectors.toList()),Arrays.asList("luzpascual621","carlasantana949","juantorres331","rubnpastor499","mariorubio577"));
     }
 
-    @Test//ME ACERQUE BASTANTE, CONSULTAR
+    @Test//PASA
     public void testGetBestSellingProduct() {
         Product product = this.service.getBestSellingProduct();
         assertEquals("Pizza napolitana",product.getName());
@@ -157,19 +157,19 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(suppliers.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("La Trattoria","Pancho Crazy","Kentucky","La Bodeguita","Foodie Special Burger","Lo de Carlos","Burger Bar"));
     }
 
-    @Test//FALLA EN ASSERT
+    @Test//PASA
     public void testGetSoldProductsOn() throws ParseException {
         List<Product> products = this.service.getSoldProductsOn(sdf.parse("28/2/2010"));
         assertEquals(4, products.size());
         this.assertListEquality(products.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("Filet de merluza a la romana","Bife de chorizo grillado","Milanesa americana","Ensalada de hojas verdes y queso"));
     }
 
-    @Test//PREGUNTAR AL AYUDANTE
+    @Test//PASA
     public void testGetOrdersCompleteMorethanOneDay() {
         assertEquals(99, this.service.getOrdersCompleteMorethanOneDay().size());
     }
 
-    @Test//RESULTADOS TESTS RAROS. PREGUNTAR AL AYUDANTE
+    @Test//PASA
     public void testGetProductsWithPriceAt() throws ParseException {
         List<Object[]> prices = this.service.getProductsWithPriceAt(sdf.parse("28/2/2013"));
         assertEquals(110, prices.size());
@@ -188,7 +188,7 @@ public class DBliveryStatisticsTestCase {
         this.assertListEquality(products.stream().map(property -> property.getName()).collect(Collectors.toList()),Arrays.asList("Bastoncitos de mozzarella a la milanesa","Milanesa Suiza","Sándwich de lomo completo","Tarta de pollo (2 porc.)","Lomo a la mostaza con papas noisette"));
     }
 
-    @Test
+    @Test//LA CONSULTA ESTA PERO FALTA EL GET AMOUNT
     public void testGetOrderWithMoreQuantityOfProducts() throws ParseException {
         List<Order> ord = this.service.getOrderWithMoreQuantityOfProducts(sdf.parse("23/6/2014"));
         assertEquals(1,ord.size());
@@ -198,8 +198,8 @@ public class DBliveryStatisticsTestCase {
         assertEquals(Float.valueOf("1867"), o.getAmount());
     }
 
-    @Test
-    public void testOrderAmount() {//PASA
+    @Test//PASA
+    public void testOrderAmount() {
         Optional<Order> ord = this.service.getOrderById(Long.getLong("77",77));
         if (ord.isPresent()) {
             Order o = ord.get();
