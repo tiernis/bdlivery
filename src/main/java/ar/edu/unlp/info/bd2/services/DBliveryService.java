@@ -103,7 +103,8 @@ public class DBliveryService implements DBliveryServiceable {
     public Order addProduct(Long order, Long quantity, Product product) throws DBliveryException {
         if(this.repository.getOrderById(order).size() != 0) {
             Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.addProduct(quantity, product);
+            Product db_prod = this.repository.getProductById(product.getId()).get(0);
+            orderConcrete.addProduct(quantity, db_prod);
             repository.save(orderConcrete);
             return orderConcrete;
         }else {throw new DBliveryException("The order don't exist");}

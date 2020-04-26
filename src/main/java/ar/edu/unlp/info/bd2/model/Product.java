@@ -95,6 +95,7 @@ public class Product {
 
 	public Float getPriceAt(Date day) {
 		Float pricesAt=0F;
+		System.out.println("Size: " + this.getPrices().size());
 		for (int i = 0; i< this.getPrices().size(); i++) {
 			if(this.getPrices().get(i).getStartDate().before(day)) {
 				pricesAt=this.getPrices().get(i).getPrice();

@@ -112,6 +112,10 @@ public class Order {
 	public Order addProduct (Long quantity, Product product) {
 		ProductOrder newProduct = new ProductOrder(quantity, product, this.getMe());
 		this.getProducts().add(newProduct);
+		//
+		System.out.println("Size: " + this.getProducts().get(this.getProducts().size() - 1).getProduct().getPrices());
+		System.out.println("Size: " + product.getPrices());
+		//
 		Float newProductCost=product.getPriceAt(this.getStatus().get(0).getDateStatus()) * quantity;
 		this.setCost(this.getCost() + newProductCost);
 		return this;
