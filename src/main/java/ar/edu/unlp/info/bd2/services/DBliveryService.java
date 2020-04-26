@@ -220,14 +220,6 @@ public class DBliveryService implements DBliveryServiceable {
     }
 
     public List<User> getUsersSpendingMoreThan(Float amount) {
-        /*SELECT SUM(quantity*price) AS Consumo, username
-FROM User AS u INNER JOIN Orden AS o ON(u.id = o.client_id)
-               INNER JOIN ProductOrder AS po ON(o.id = po.order_id)
-               INNER JOIN Price AS p ON(p.product_id = po.product_id)
-               INNER JOIN OrderStatus AS os ON(o.id = os.order_id)
-WHERE p.id IN (SELECT MAX(id) FROM Price GROUP BY product_id) AND os.status = 'Delivered'
-GROUP BY u.username HAVING SUM(quantity*price) > 6000
-ORDER BY Consumo;*/
         return this.repository.getUsersSpendingMoreThan(amount);
     }
 
