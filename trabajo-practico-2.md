@@ -55,7 +55,7 @@ Descargue la última versión de MongoDB desde el sitio oficial. Ingrese al clie
     
     Recupere la información del departamento usando el comando <emp style="font-family:consolas">db.apartments.find()</emp> (puede agregar la función .pretty() al final de la expresión para ver los datos indentados). Notará que no se encuentran exactamente los atributos que insertó. ¿Cuál es la diferencia?
 
-    Al usar "db.apartments.find()" se puede apreciar que hay un atributo más que los que se insertó anteriormente con nombre _id que es un identificador que mongo generó automaticamente al crear el documento.
+    Al usar <emp style="font-family:consolas">db.apartments.find()</emp> se puede apreciar que hay un atributo más que los que se insertó anteriormente con nombre _id que es un identificador que mongo generó automaticamente al crear el documento.
     
 Una característica fundamental de MongoDB y otras bases NoSQL es que los documentos no tienen una estructura definida, como puede ser una tabla en un RDBMS. En una misma colección pueden convivir documentos con diferentes atributos, e incluso atributos de múltiples valores y documentos embebidos.
 
@@ -101,6 +101,8 @@ Una característica fundamental de MongoDB y otras bases NoSQL es que los docume
         ```db.apartments.find({services:null})```
     
     Vuelva a realizar la última consulta pero proyecte sólo el nombre del departamento en los resultados, omitiendo incluso el atributo **_id** de la proyección.
+	
+	```db.apartments.find({services:null}, {name :1, _id:0})```
     
 En MongoDB hay diferentes maneras de realizar actualizaciones, de acuerdo a las necesidades del esquema flexible de documentos.
 
@@ -177,9 +179,38 @@ for (var i = 1; i <= 50000; i++)
 ```
 
 13. Obtenga 5 departamentos aleatorios de la colección.
+
+	```db.apartments.aggregate([{ $sample: { size: 5 } }])```
+
 14. Usando el framework de agregación, obtenga los departamentos que estén a 15km (o menos) del centro de la ciudad de Londres (**[-0.127718, 51.507451]**) y guárdelos en una nueva colección.
+
+	```
+	db.apartments.aggregate([
+		{$match:{ location: { $geoWithin: { $centerSphere: [ [-0.127718, 51.507451], 15/6378.1 ] } } }},
+		{$out: "centerOfLondon"}])
+	```
+	
 15. Para los departamentos hallados en el punto anterior, obtener una colección con cada departamento agregando un atributo <emp style="font-family:consolas">reservas</emp> que contenga un _array_ con todas sus reservas. Note que sólo es posible ligarlas por el nombre del departamento.
+
+	```
+	db.centerOfLondon.aggregate([
+   		{$lookup: {
+         		from: "reservations",
+         		localField: "name",    // field in the centerOfLondon collection
+         		foreignField: "apartmentName",  // field in the reservations collection
+         		as: "myReservations"}},
+    		{$out: "aparWithRes"}
+	])
+	```
 
 Si la consulta se empieza a tornar difícil de leer, se pueden ir guardando los agregadores en variables, que no son más que objetos en formato JSON.
 
 16. Usando la colección del punto anterior, obtenga el promedio de precio pagado por reserva (precio completo, no dividir por la cantidad de noches) de cada departamento.
+
+	```	
+	db.aparWithRes.aggregate([{
+		$project: {
+       			name: 1,
+       			avgReservations:{$avg: "$myReservations.amount" }}}
+	])
+	```
