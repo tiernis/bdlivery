@@ -141,7 +141,17 @@ for (var i = 1; i <= 50000; i++)
 }
 ```
 10. Busque en la colección de departamentos si existe algún índice definido.
+
+    Si, existe un índice definido: el índice por defecto *_id*.
+
 11. Cree un índice para el campo name. Busque los departamentos que tengan en su nombre el string "11" y utilice el método <emp style="font-family:consolas">explain("executionStats")</emp> al final de la consulta, para comparar la **cantidad de documentos examinados** y el **tiempo en milisegundos** de la consulta con y sin índice.
+
+    Con el comando que sigue, en apartments, estoy creando un índice de la llave _name_ y le defino el nombre *apartments_name*.
+
+    ```db.apartments.createIndex({name:1}, {name:"apartments_name"})```
+
+    Con el índice tarda 44ms, sin el índice tarda 30ms CONSULTAR
+
 12. Busque los departamentos dentro de la ciudad de Londres. Para esto, puede definir una variable en la terminal y asignarle como valor el polígono del archivo provisto <emp style="font-family:consolas">greaterlondon.geojson</emp> (copiando y pegando directamente). Cree un índice geoespacial de tipo <emp style="font-family:consolas">2dsphere</emp> para el campo <emp style="font-family:consolas">location</emp> de la colección <emp style="font-family:consolas">apartments</emp> y, de la misma forma que en el punto 11, compare la performance de la consulta con y sin dicho índice.
 
 ---
