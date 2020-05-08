@@ -281,9 +281,15 @@ for (var i = 1; i <= 50000; i++)
 14. Usando el framework de agregación, obtenga los departamentos que estén a 15km (o menos) del centro de la ciudad de Londres (**[-0.127718, 51.507451]**) y guárdelos en una nueva colección.
 
 	```
+	db.apartments.createIndex( { location : "2dsphere"  })
 	db.apartments.aggregate([
-		{$match:{ location: { $geoWithin: { $centerSphere: [ [-0.127718, 51.507451], 15/6378.1 ] } } }},
-		{$out: "centerOfLondon"}])
+	   {$geoNear: {
+	        near: { type: "Point", coordinates: [-0.127718, 51.507451] },
+	        distanceField: "distance",
+	        maxDistance: 15000,
+	        spherical: true}},
+	   {$out: "centerOfLondon"}
+	])
 	```
 	
 15. Para los departamentos hallados en el punto anterior, obtener una colección con cada departamento agregando un atributo <emp style="font-family:consolas">reservas</emp> que contenga un _array_ con todas sus reservas. Note que sólo es posible ligarlas por el nombre del departamento.
