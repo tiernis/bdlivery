@@ -1,309 +1,178 @@
 package ar.edu.unlp.info.bd2.services;
-
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.repositories.DBliveryException;
-import ar.edu.unlp.info.bd2.repositories.DBliveryRepository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.bson.types.ObjectId;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
-public class DBliveryService implements DBliveryServiceable {
 
-    private DBliveryRepository repository;
+public interface DBliveryService {
 
-    public DBliveryService(DBliveryRepository repository){
-        this.repository = repository;
-    }
+	/**
+	 *  Crea y devuelve un nuevo Producto.
+	 * @param name nombre del producto a ser creado
+	 * @param price precio actual del producto
+	 * @param weight peso actual del producto
+	 * @param supplier el productor del producto
+	 * @return el producto creado
+	 */
+	Product createProduct(String name, Float price, Float weight, Supplier supplier);
+	Product createProduct(String name, Float price, Float weight, Supplier supplier, Date date);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
-        Product product = new Product(name, price, weight, supplier);
-        repository.save(product);
-        return product;
-    }
+	/**
+	 * Crea y retorna un nuevo Productor
+	 * @param name nombre del productor
+	 * @param cuil cuil del productor
+	 * @param address dirección del productor
+	 * @param coordX  coordenada X de la dirección del productor
+	 * @param coordY coordeada Y de la dirección del produtor
+	 * @return el productor creado
+	 */
+	Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Product createProduct(String name, Float price, Float weight, Supplier supplier, Date date) {
-        Product product = new Product(name, price, weight, supplier, date);
-        repository.save(product);
-        return product;
-    }
+	/**
+	 * Crea y retorna un Usuario
+	 * @param email email del usuario
+	 * @param password clave del usuario
+	 * @param username nombre de usuario del usuario
+	 * @param name nombre y apellido del usuario
+	 * @param dateOfBirth fecha de nacimiento del usuario
+	 * @return el usuario creado
+	 */
+	User createUser(String email, String password, String username, String name, Date dateOfBirth);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY) {
-        Supplier supplier = new Supplier(name, cuil, address, coordX, coordY);
-        repository.save(supplier);
-        return supplier;
-    }
+	/**
+	 * Actualiza el precio del producto manteniendo el historial de cambios de precio del mismo.
+	 * @param id id del producto
+	 * @param price nuevo precio del producto
+	 * @param startDate fecha de inicio del nuevo precio
+	 * @return el producto modificado
+	 * @throws DBliveryException en caso de que no exista el producto para el id dado
+	 */
+	Product updateProductPrice(ObjectId id, Float price, Date startDate) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
-        User user = new User(email, password, name, username, dateOfBirth);
-        repository.save(user);
-        return user;
-    }
+	/**
+	 * Obtiene el usuario por id
+	 * @param id
+	 * @return el usuario con el id provisto
+	 */
+	Optional<User> getUserById(ObjectId id);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Product updateProductPrice(Long id, Float price, Date startDate) throws DBliveryException {
-        if(this.repository.getProductById(id).size() != 0) {
-            Product product = this.repository.getProductById(id).get(0);
-            product.updateProductPrice(price, startDate);
-            repository.save(product);
-            return product;
-        }else {throw new DBliveryException("The product don't exist");}
-    }
+	/**
+	 * Obtiene el usuario por el email
+	 * @param email
+	 * @return el usuario con el email provisto
+	 */
+	Optional<User> getUserByEmail(String email);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public Optional<User> getUserById(Long id) {
-        return Optional.of(repository.getUserBy("id", id).get(0));
-    }
+	/**
+	 * Obtiene el usuario por el username
+	 * @param username
+	 * @return el usuario con el username provisto
+	 */
+	Optional<User> getUserByUsername(String username);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public Optional<User> getUserByEmail(String email) {
-        return Optional.of(repository.getUserBy("email", email).get(0));
-    }
+//	/**
+//	 * Obtiene el producto por id
+//	 * @param id
+//	 * @return el producto con el id provisto
+//	 */
+//	Optional<Product> getProductById(Long id);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public Optional<User> getUserByUsername(String username) {
-        return Optional.of(repository.getUserBy("username", username).get(0));
-    }
+	/**
+	 * Obtiene el pedido por id
+	 * @param id
+	 * @return el pedido con el id provisto
+	 */
+	Optional<Order> getOrderById(ObjectId id);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public Optional<Product> getProductById(Long id) {
-        return Optional.of(repository.getProductById(id).get(0));
-    }
+	/**
+	 * Crea y retorna un nuevo pedido
+	 * @param dateOfOrder timestamp de la fecha en que fue realizado el pedido
+	 * @param address dirección en la cual se debe entregar el pedido
+	 * @param coordX coordenada X de la dirección
+	 * @param coordY coordenada Y de la dirección
+	 * @param client cliente que realizó el pedido
+	 * @return el nuevo pedido
+	 */
+	Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY,User client);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public Optional<Order> getOrderById(Long id) {
-        return Optional.of(repository.getOrderById(id).get(0));
-    }
+	/**
+	 * agrega un producto al pedido
+	 * @param order pedido al cual se le agrega el producto
+	 * @param quantity cantidad de producto a agregar
+	 * @param product producto a agregar
+	 * @return el pedido con el nuevo producto
+	 * @throws DBliveryException en caso de no existir el pedido
+	 */
+	Order addProduct (ObjectId order,Long quantity, Product product )throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY, User client){
-        Order order = new Order(dateOfOrder,address,coordX,coordY,client);
-        repository.save(order);
-        return order;
-    }
+	/**
+	 * Registra el envío del pedido, registrando al repartidor y cambiando su estado a Send.
+	 * @param order pedido a ser enviado
+	 * @param deliveryUser Usuario que entrega el pedido
+	 * @return el pedido modificado
+	 * @throws DBliveryException en caso de no existir el pedido, que el pedido no se encuentre en estado Pending o sí no contiene productos.
+	 */
+	Order deliverOrder(ObjectId order, User deliveryUser) throws DBliveryException;
+	Order deliverOrder(ObjectId order, User deliveryUser, Date date) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order addProduct(Long order, Long quantity, Product product) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            Product db_prod = this.repository.getProductById(product.getId()).get(0);
-            orderConcrete.addProduct(quantity, db_prod);
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * Cancela un pedido
+	 * @param order id del pedido a cancelar
+	 * @return el pedido modificado
+	 * @throws DBliveryException en caso de no existir el pedido o si el pedido no esta en estado pending
+	 */
+	Order cancelOrder(ObjectId order) throws DBliveryException;
+	Order cancelOrder(ObjectId order, Date date) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order deliverOrder(Long order, User deliveryUser) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.deliverOrder(deliveryUser, new Date());
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * Registra la entrega de un pedido.
+	 * @param order pedido a finalizar
+	 * @return el pedido modificado
+	 * @throws DBliveryException en caso que no exista el pedido o si el mismo no esta en estado Send
+	 */
+	Order finishOrder(ObjectId order) throws DBliveryException;
+	Order finishOrder(ObjectId order, Date date) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order deliverOrder(Long order, User deliveryUser, Date date) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.deliverOrder(deliveryUser, date);
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * verifica si un pedido se puede cancelar, para lo cual debe estar en estado pending
+	 * @param order pedido a ser cancelado
+	 * @return true en caso que pueda ser cancelado false en caso contrario.
+	 * @throws DBliveryException si no existe el pedido.
+	 */
+	boolean canCancel(ObjectId order) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order cancelOrder(Long order) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.cancelOrder(new Date());
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * verifica si se puede finalizar un pedido
+	 * @param id del pedido a finalizar
+	 * @return true en caso que pueda ser finalizado, false en caso contrario
+	 * @throws DBliveryException en caso de no existir el pedido
+	 */
+	boolean canFinish(ObjectId id) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order cancelOrder(Long order, Date date) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.cancelOrder(date);
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * verifica si un pedido puede ser enviado para lo cual debe tener productos y estar en estado pending
+	 * @param order pedido a ser enviado
+	 * @return true en caso que pueda ser enviado, false en caso contrario
+	 * @throws DBliveryException si el pedido no esta en estado pending.
+	 */
+	boolean canDeliver(ObjectId order) throws DBliveryException;
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order finishOrder(Long order) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.finishOrder(new Date());
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * Obtiene el estado actual de un pedido.
+	 * @param order pedido del cual se debe retornar el estado actual
+	 * @return el estado del pedido actual
+	 */
+	OrderStatus getActualStatus(ObjectId order);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor=DBliveryException.class)
-    public Order finishOrder(Long order, Date date) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            orderConcrete.finishOrder(date);
-            repository.save(orderConcrete);
-            return orderConcrete;
-        }else {throw new DBliveryException("The order don't exist");}
-    }
+	/**
+	 * Obtiene el listado de productos que su nombre contega el string dado
+	 * @param name string a buscar
+	 * @return Lista de productos
+	 */
+	List<Product> getProductsByName(String name);
 
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public boolean canCancel(Long order) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            return orderConcrete.canCancel();
-        }else {throw new DBliveryException("The order don't exist");}
-    }
-
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public boolean canFinish(Long order) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            return orderConcrete.canFinish();
-        }else {throw new DBliveryException("The order don't exist");}
-    }
-
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public boolean canDeliver(Long order) throws DBliveryException {
-        if(this.repository.getOrderById(order).size() != 0) {
-            Order orderConcrete = this.repository.getOrderById(order).get(0);
-            return orderConcrete.canDeliver();
-        }else {throw new DBliveryException("The order don't exist");}
-    }
-
-    @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public OrderStatus getActualStatus(Long order) {
-        Order orderConcrete = this.repository.getOrderById(order).get(0);
-        return orderConcrete.getActualStatus();
-    }
-
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=true, noRollbackFor=DBliveryException.class)
-    public List<Product> getProductByName(String name) {
-        return repository.getProductByName(name);
-    }
-
-    public List<Order> getAllOrdersMadeByUser(String user) {
-        return this.repository.getAllOrdersMadeByUser(user);
-    }
-
-    public List<User> getUsersSpendingMoreThan(Float amount) {
-        return this.repository.getUsersSpendingMoreThan(amount);
-    }
-
-    public List<Supplier> getTopNSuppliersInSentOrders(int quantity_suppliers) {
-        return this.repository.getTopNSuppliersInSentOrders(quantity_suppliers);
-    }
-
-    public List<Product> getTop10MoreExpensiveProducts() {
-        return this.repository.getTop10MoreExpensiveProducts();
-    }
-
-    public List<User> getTop6UsersMoreOrders() {
-        return this.repository.getTop6UsersMoreOrders();
-    }
-
-    public List<Order> getCancelledOrdersInPeriod(Date start, Date end) {
-        return this.repository.getCancelledOrdersInPeriod(start, end);
-    }
-
-    public List<Order> getPendingOrders() {
-        return this.repository.getPendingOrders();
-    }
-
-    public List<Order> getSentOrders() {
-        return this.repository.getSentOrders();
-    }
-
-    public List<Order> getDeliveredOrdersInPeriod(Date start, Date end) {
-        return this.repository.getDeliveredOrdersInPeriod(start, end);
-    }
-
-    public List<Order> getDeliveredOrdersForUser(String username) {
-        return this.repository.getDeliveredOrdersForUser(username);
-    }
-
-    public List<Order> getSentMoreOneHour() {
-        return this.repository.getSentMoreOneHour();
-    }
-
-    public List<Order> getDeliveredOrdersSameDay() {
-        return this.repository.getDeliveredOrdersSameDay();
-    }
-
-    public List<User> get5LessDeliveryUsers() {
-        return this.repository.get5LessDeliveryUsers();
-    }
-
-    public Product getBestSellingProduct() {
-        return this.repository.getBestSellingProducts().get(0);
-    }
-
-    public List<Product> getProductsOnePrice() {
-        return this.repository.getProductsOnePrice();
-    }
-
-    public List<Product> getProductIncreaseMoreThan100() {
-        return this.repository.getProductIncreaseMoreThan100();
-    }
-
-    public Supplier getSupplierLessExpensiveProduct() {
-        return this.repository.getSupplierLessExpensiveProduct().get(0);
-    }
-
-    public List<Supplier> getSuppliersDoNotSellOn(Date day) {
-        return this.repository.getSuppliersDoNotSellOn(day);
-    }
-
-    public List<Product> getSoldProductsOn(Date date) {
-    	return this.repository.getSoldProductsOn(date);
-    }
-
-    public List<Order> getOrdersCompleteMorethanOneDay() {
-        return this.repository.getOrdersCompleteMorethanOneDay();
-    }
-
-    public List<Object[]> getProductsWithPriceAt(Date date) {
-        return repository.getProductsWithPriceAt(date);
-    }
-
-    public List<Product> getProductsNotSold() {
-        return this.repository.getProductsNotSold();
-    }
-
-    public List<Order> getOrderWithMoreQuantityOfProducts(Date date) {
-        return repository.getOrderWithMoreQuantityOfProducts(date);
-    }
 }
