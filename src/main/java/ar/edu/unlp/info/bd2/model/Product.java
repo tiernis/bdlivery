@@ -2,11 +2,19 @@ package ar.edu.unlp.info.bd2.model;
 
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Product {
-    public Object getObjectId() {
-        return null;
+
+    private ObjectId objectId;
+    private String name;
+    private Float weight;
+    private Supplier supplier;
+    //private List<Price> allPrices = new ArrayList<>();
+
+    public ObjectId getObjectId() {
+        return objectId;
     }
 
     public Collection<Object> getPrices() {

@@ -14,11 +14,6 @@ public class DBliveryServiceImpl implements DBliveryService {
     }
 
     @Override
-    public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
-        return null;
-    }
-
-    @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier, Date date) {
         return null;
     }
@@ -61,11 +56,6 @@ public class DBliveryServiceImpl implements DBliveryService {
     @Override
     public Optional<Order> getOrderById(ObjectId id) {
         return Optional.empty();
-    }
-
-    @Override
-    public Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
-        return null;
     }
 
     @Override

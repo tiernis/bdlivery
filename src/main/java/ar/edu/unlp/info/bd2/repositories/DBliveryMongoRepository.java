@@ -18,7 +18,6 @@ public class DBliveryMongoRepository {
 
     @Autowired private MongoClient client;
 
-
     public void saveAssociation(PersistentObject source, PersistentObject destination, String associationName) {
         Association association = new Association(source.getObjectId(), destination.getObjectId());
         this.getDb()
@@ -30,7 +29,7 @@ public class DBliveryMongoRepository {
         return this.client.getDatabase("bd2_grupo" + this.getGroupNumber() );
     }
 
-    private Integer getGroupNumber() { return 0; }
+    private Integer getGroupNumber() { return 11; }
 
     public <T extends PersistentObject> List<T> getAssociatedObjects(
             PersistentObject source, Class<T> objectClass, String association, String destCollection) {
