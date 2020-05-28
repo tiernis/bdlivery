@@ -1,8 +1,11 @@
 package ar.edu.unlp.info.bd2.services;
 
 import ar.edu.unlp.info.bd2.model.*;
+import ar.edu.unlp.info.bd2.mongo.Association;
+import ar.edu.unlp.info.bd2.mongo.PersistentObject;
 import ar.edu.unlp.info.bd2.repositories.DBliveryException;
 import ar.edu.unlp.info.bd2.repositories.DBliveryMongoRepository;
+import com.mongodb.client.MongoCollection;
 import org.bson.types.ObjectId;
 
 import java.util.Date;
@@ -10,7 +13,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class DBliveryServiceImpl implements DBliveryService {
+
+    private DBliveryMongoRepository repo;
+
     public DBliveryServiceImpl(DBliveryMongoRepository repository) {
+        this.setRepo(repository);
+    }
+
+    public void setRepo(DBliveryMongoRepository repo) {
+        this.repo = repo;
+    }
+
+    public DBliveryMongoRepository getRepo() {
+        return repo;
     }
 
     @Override
@@ -30,7 +45,11 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
-        return null;
+        User user = new User(email,password,username,name,dateOfBirth);
+        repo.saveUser(user);
+        //System.out.println(repo.getLastUserInserted().getObjectId());
+        //return repo.getLastUserInserted();
+        return user;
     }
 
     @Override

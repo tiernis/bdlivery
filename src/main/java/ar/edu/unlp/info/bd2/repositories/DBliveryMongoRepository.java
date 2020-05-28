@@ -6,17 +6,48 @@ import static com.mongodb.client.model.Filters.regex;
 
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.mongo.*;
+import com.mongodb.Block;
 import com.mongodb.client.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import org.bson.BsonDocument;
+import org.bson.Document;
+import org.bson.json.JsonParseException;
+import org.bson.json.JsonWriter;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DBliveryMongoRepository {
 
     @Autowired private MongoClient client;
+
+    public void saveUser(User user){
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        collection.insertOne(user);
+    }
+
+    public User getLastUserInserted(){
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        Block<User> printBlock = new Block<User>() {
+            @Override
+            public void apply(final User user) {
+                System.out.println(user);
+            }
+        };
+
+        User final_user = null;
+
+        for (User user : collection.find().sort(new Document("_id", -1)).limit(1)) {
+            final_user = user;
+        }
+
+        return final_user;
+    }
+
+    //MÉTODOS QUE NO ENTIENDO
 
     public void saveAssociation(PersistentObject source, PersistentObject destination, String associationName) {
         Association association = new Association(source.getObjectId(), destination.getObjectId());
