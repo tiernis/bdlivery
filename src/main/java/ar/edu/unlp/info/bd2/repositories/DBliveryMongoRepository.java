@@ -46,6 +46,23 @@ public class DBliveryMongoRepository {
 
         return final_user;
     }
+    
+
+    public void saveProduct(Product product){
+        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
+        collection.insertOne(product);
+    }
+    
+
+    
+    public void saveSupplier(Supplier supplier){
+        MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
+        collection.insertOne(supplier);
+    }
+    
+    
+    
+    
 
     //MÉTODOS QUE NO ENTIENDO
 

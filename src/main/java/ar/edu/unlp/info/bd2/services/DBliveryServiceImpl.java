@@ -35,12 +35,16 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
-        return null;
+    	 Product product = new Product(name, price, weight, supplier.getObjectId());
+         repo.saveProduct(product);
+         return product;
     }
 
     @Override
     public Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY) {
-        return null;
+        Supplier supplier = new Supplier(name,cuil,address,coordX,coordY);
+        repo.saveSupplier(supplier);
+        return supplier;
     }
 
     @Override
