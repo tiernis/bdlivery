@@ -1,28 +1,19 @@
 package ar.edu.unlp.info.bd2.model;
 
-import javax.persistence.*;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.types.ObjectId;
 
-@Entity
-@Table(name = "Supplier")
 public class Supplier {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique=true, nullable = false)
-	private Long id;
-	@Column(name ="name_supplier")
+	@BsonId
+	private ObjectId objectId;
 	private String name;
-	@Column(name ="cuil")
 	private String cuil;
-	@Column(name ="address_supplier")
 	private String address;
-	@Column(name ="coordx_supplier")
 	private Float coordX;
-	@Column(name ="coordy_supplier")
 	private Float coordY;
-
-	public Supplier(){
-	}
+	
+	public Supplier() {}
 	
 	public Supplier(String name, String cuil, String address, Float coordX, Float coordY) {
 		this.setName(name);
@@ -32,13 +23,14 @@ public class Supplier {
 		this.setCoordY(coordY);
 	}
 
-	public Long getId() {
-		return id;
+	public ObjectId getObjectId() {
+		return objectId;
 	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	
+    public void setObjectId(ObjectId objectId) {
+        this.objectId = objectId;
+    }
+    
 
 	public String getName() {
 		return name;
