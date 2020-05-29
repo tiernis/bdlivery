@@ -6,6 +6,8 @@ import static com.mongodb.client.model.Filters.regex;
 
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.mongo.*;
+
+import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.client.*;
 import java.util.*;
@@ -57,7 +59,19 @@ public class DBliveryMongoRepository {
     
     public void saveSupplier(Supplier supplier){
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
-        collection.insertOne(supplier);
+        BasicDBObject whereQuery = new BasicDBObject();
+        whereQuery.put("cuil", supplier.getCuil());
+        FindIterable<Supplier> docsIterable = collection.find(whereQuery); 
+        try (MongoCursor<Supplier> iterator = docsIterable.iterator()){
+        int count = 0;
+        while (iterator.hasNext()) {
+        iterator.next();
+        count++;
+        }
+        if( count == 0){
+        	collection.insertOne(supplier);
+        }
+        }
     }
     
     
