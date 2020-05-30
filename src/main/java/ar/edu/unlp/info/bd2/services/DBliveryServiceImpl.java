@@ -58,7 +58,9 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Product updateProductPrice(ObjectId id, Float price, Date startDate) throws DBliveryException {
-        return null;
+        Price newPrice= new Price(price, startDate);
+    	repo.UpdateProductPrice(id, newPrice);
+    	return null;
     }
 
     @Override
@@ -83,7 +85,9 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
-        return null;
+    	Order order = new Order(dateOfOrder,address,coordX,coordY,client);
+        repo.saveOrder(order);
+        return order;
     }
 
     @Override

@@ -10,6 +10,8 @@ import ar.edu.unlp.info.bd2.mongo.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Updates;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,10 +54,20 @@ public class DBliveryMongoRepository {
 
     public void saveProduct(Product product){
         MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        collection.insertOne(product);
+        BasicDBObject whereQuery = new BasicDBObject();
+        whereQuery.put("name", product.getName());
+        FindIterable<Product> docsIterable = collection.find(whereQuery); 
+        try (MongoCursor<Product> iterator = docsIterable.iterator()){
+        int count = 0;
+        while (iterator.hasNext()) {
+        iterator.next();
+        count++;
+        }
+        if( count == 0){
+        	collection.insertOne(product);
+        }
+        }
     }
-    
-
     
     public void saveSupplier(Supplier supplier){
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
@@ -74,7 +86,17 @@ public class DBliveryMongoRepository {
         }
     }
     
+    public void saveOrder(Order order){
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        collection.insertOne(order);
+    }
     
+    public void UpdateProductPrice(ObjectId product, Price newPrice) {
+    	MongoCollection<Supplier> collection = this.getDb().getCollection("Product", Supplier.class);
+    	collection.updateOne(eq("_id", product), Updates.addToSet("prices", newPrice));
+    	BasicDBObject updateQuery = new BasicDBObject(); updateQuery.append("$set", new BasicDBObject().append("price", newPrice.getPrice()));
+    	collection.updateOne(eq("_id", product), updateQuery);
+    }
     
     
 
@@ -108,6 +130,5 @@ public class DBliveryMongoRepository {
                 StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
         return stream.collect(Collectors.toList());
     }
-
 
 }

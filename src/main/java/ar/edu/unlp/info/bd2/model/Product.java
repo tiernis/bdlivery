@@ -16,6 +16,8 @@ public class Product {
     private Float weight;
     private ObjectId supplier;
     private List<Price> allPrices = new ArrayList<>();
+    
+    public Product() {}
 
     public Product(String name, Float price, Float weight, ObjectId supplier) {
 		Price newPrice = new Price(price, new Date());
