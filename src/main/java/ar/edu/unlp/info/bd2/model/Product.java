@@ -17,12 +17,14 @@ public class Product {
     private ObjectId supplier;
     private List<Price> allPrices = new ArrayList<>();
 
-    public Product(String name, Float price, Float weight, ObjectId supplier) {
-		Price newPrice = new Price(price, new Date());
-		allPrices.add(newPrice);
-		this.name = name;
-		this.weight = weight;
-		this.supplier = supplier;
+    public Product(){
+
+	}
+
+    public Product(String name, Float weight, ObjectId supplier) {
+		this.setName(name);
+		this.setWeight(weight);
+		this.setSupplier(supplier);
 	}
 
 	public ObjectId getObjectId() {
@@ -53,7 +55,15 @@ public class Product {
 		this.name = name;
 	}
 
-	public Collection<Price> getPrices() {
+	public void setAllPrices(List<Price> prices){
+    	this.allPrices = prices;
+	}
+
+	public List<Price> getAllPrices() {
+		return allPrices;
+	}
+
+	public List<Price> getPrices() {
         return allPrices;
     }
 
@@ -62,6 +72,12 @@ public class Product {
     }
 
     public Float getPrice() {
-        return allPrices.get(allPrices.size() - 1).getPrice();
+        return this.getPrices().get(this.getPrices().size() - 1).getPrice();
     }
+
+	public Product updateProductPrice(Float price, Date startDate){
+		Price newPrice = new Price(price, startDate);
+		this.getPrices().add(newPrice);
+		return this;
+	}
 }
