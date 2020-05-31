@@ -13,6 +13,8 @@ public class Supplier {
 	private Float coordX;
 	private Float coordY;
 	
+	public Supplier() {}
+	
 	public Supplier(String name, String cuil, String address, Float coordX, Float coordY) {
 		this.setName(name);
 		this.setCuil(cuil);
