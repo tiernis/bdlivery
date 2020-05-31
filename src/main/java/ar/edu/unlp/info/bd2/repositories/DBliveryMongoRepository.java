@@ -119,6 +119,20 @@ public class DBliveryMongoRepository {
         collection.replaceOne(eq("_id", product.getObjectId()), product);
     }
 
+    public void saveOrder(Order order){
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        collection.insertOne(order);
+    }
+    
+    public Order getOrder(ObjectId id){
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        return collection.find(eq("_id", id)).first();
+    }
+    
+    public void updateOrder(Order order){
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        collection.replaceOne(eq("_id", order.getObjectId()), order);
+    }
 
     //MÉTODOS QUE NO ENTIENDO
 

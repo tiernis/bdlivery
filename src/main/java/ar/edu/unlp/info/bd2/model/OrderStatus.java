@@ -7,6 +7,8 @@ public class OrderStatus {
 	private String status;
 	private Date dateStatus;
 	
+	public OrderStatus() {}
+	
 	public OrderStatus(String status, Date dateStatus) {
 		super();
 		this.status = status;

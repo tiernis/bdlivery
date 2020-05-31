@@ -92,17 +92,22 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Optional<Order> getOrderById(ObjectId id) {
-        return Optional.empty();
+        return Optional.of(this.getRepo().getOrder(id));
     }
 
     @Override
     public Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
-        return null;
+    	Order order = new Order(dateOfOrder,address,coordX,coordY,client);
+        this.getRepo().saveOrder(order);
+        return order;
     }
 
     @Override
     public Order addProduct(ObjectId order, Long quantity, Product product) throws DBliveryException {
-        return null;
+        Order theOrder=this.getRepo().getOrder(order);
+        Order modifiedOrder=theOrder.addProduct(quantity, product);
+        this.getRepo().updateOrder(modifiedOrder);
+    	return modifiedOrder;
     }
 
     @Override
