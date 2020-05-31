@@ -18,6 +18,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     public DBliveryServiceImpl(DBliveryMongoRepository repository) {
         this.setRepo(repository);
+        this.getRepo().initialize();
     }
 
     public void setRepo(DBliveryMongoRepository repo) {
@@ -31,21 +32,30 @@ public class DBliveryServiceImpl implements DBliveryService {
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier, Date date) {
         Product product = new Product(name, weight, supplier.getObjectId());
-        this.getRepo().saveProduct(product.updateProductPrice(price, date));
+        Boolean was_inserted = this.getRepo().saveProduct(product.updateProductPrice(price, date));
+        if (!was_inserted){
+            product = this.getRepo().getProductByNameAndSupplier(name, supplier);
+        }
         return product;
     }
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
     	 Product product = new Product(name, weight, supplier.getObjectId());
-         this.getRepo().saveProduct(product.updateProductPrice(price, new Date()));
+         Boolean was_inserted = this.getRepo().saveProduct(product.updateProductPrice(price, new Date()));
+         if (!was_inserted){
+             product = this.getRepo().getProductByNameAndSupplier(name, supplier);
+         }
          return product;
     }
 
     @Override
     public Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY) {
         Supplier supplier = new Supplier(name,cuil,address,coordX,coordY);
-        this.getRepo().saveSupplier(supplier);
+        Boolean was_inserted = this.getRepo().saveSupplier(supplier);
+        if (!was_inserted){
+            supplier = this.getRepo().getSupplier(cuil);
+        }
         return supplier;
     }
 

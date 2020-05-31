@@ -1,20 +1,23 @@
 package ar.edu.unlp.info.bd2.repositories;
 
 import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.regex;
+import static com.mongodb.client.model.Filters.*;
 
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.mongo.*;
 import com.mongodb.Block;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.json.JsonParseException;
@@ -26,14 +29,64 @@ public class DBliveryMongoRepository {
 
     @Autowired private MongoClient client;
 
-    public void saveUser(User user){
+    private void createUserIndex(){
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
-        collection.insertOne(user);
+        IndexOptions indexOptions = new IndexOptions().unique(true);
+        collection.createIndex(Indexes.ascending("email, username"), indexOptions);
     }
 
-    public void saveProduct(Product product){
+    private void createSupplierIndex() {
+        MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
+        IndexOptions indexOptions = new IndexOptions().unique(true);
+        collection.createIndex(Indexes.ascending("cuil"), indexOptions);
+    }
+
+    private void createProductIndex() {
         MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        collection.insertOne(product);
+        IndexOptions indexOptions = new IndexOptions().unique(true);
+        collection.createIndex(Indexes.compoundIndex(Indexes.ascending("name"), Indexes.ascending("supplier")), indexOptions);
+    }
+
+    public void initialize() {
+        this.createUserIndex();
+        this.createSupplierIndex();
+        this.createProductIndex();
+    }
+
+    public void saveUser(User user) throws MongoWriteException {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        try {
+            collection.insertOne(user);
+        }
+        catch(MongoWriteException e) {
+            System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
+        }
+    }
+
+    public Boolean saveSupplier(Supplier supplier){
+        MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
+        try {
+            collection.insertOne(supplier);
+            return true;
+        }
+        catch(MongoWriteException e) {
+            System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
+            return false;
+        }
+    }
+
+    public Boolean saveProduct(Product product){
+        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
+        try {
+            collection.insertOne(product);
+            return true;
+        }
+        catch(MongoWriteException e) {
+            System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
+            collection.deleteOne(eq("_id", this.getProductByName(product.getName()).get(0).getObjectId()));
+            collection.insertOne(product);
+            return false;
+        }
     }
 
     public Product getProduct(ObjectId id){
@@ -41,27 +94,31 @@ public class DBliveryMongoRepository {
         return collection.find(eq("_id", id)).first();
     }
 
-    public void replaceProduct(Product product){
-        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        collection.replaceOne(eq("_id", product.getObjectId()), product);
-    }
-    
-    public void saveSupplier(Supplier supplier){
-        MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
-        collection.insertOne(supplier);
-    }
-
     public List<Product> getProductByName(String name) {
         MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
         ArrayList<Product> list = new ArrayList<>();
-        for (Product dbObject : collection.find(eq("name", name)))
+        for (Product dbObject : collection.find(regex("name", ".*" + Pattern.quote(name) + ".*", "i")))
         {
             list.add(dbObject);
         }
         return list;
     }
-    
-    
+
+    public Product getProductByNameAndSupplier(String name, Supplier supplier) {
+        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
+        return collection.find(and(eq("name", name), eq("supplier", supplier.getObjectId()))).first();
+    }
+
+    public Supplier getSupplier(String cuil) {
+        MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
+        return collection.find(eq("cuil", cuil)).first();
+    }
+
+    public void replaceProduct(Product product){
+        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
+        collection.replaceOne(eq("_id", product.getObjectId()), product);
+    }
+
 
     //MÉTODOS QUE NO ENTIENDO
 
@@ -93,7 +150,6 @@ public class DBliveryMongoRepository {
                 StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
         return stream.collect(Collectors.toList());
     }
-
 
     //RETAZOS DE CODIGO QUE EN ALGUN MOMENTO USE
 
