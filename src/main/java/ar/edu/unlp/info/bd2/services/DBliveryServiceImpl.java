@@ -18,6 +18,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     public DBliveryServiceImpl(DBliveryMongoRepository repository) {
         this.setRepo(repository);
+        this.getRepo().initialize();
     }
 
     public void setRepo(DBliveryMongoRepository repo) {
@@ -30,37 +31,48 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier, Date date) {
-        return null;
+        Product product = new Product(name, weight, supplier.getObjectId());
+        Boolean was_inserted = this.getRepo().saveProduct(product.updateProductPrice(price, date));
+        if (!was_inserted){
+            product = this.getRepo().getProductByNameAndSupplier(name, supplier);
+        }
+        return product;
     }
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
-    	 Product product = new Product(name, price, weight, supplier.getObjectId());
-         repo.saveProduct(product);
+    	 Product product = new Product(name, weight, supplier.getObjectId());
+         Boolean was_inserted = this.getRepo().saveProduct(product.updateProductPrice(price, new Date()));
+         if (!was_inserted){
+             product = this.getRepo().getProductByNameAndSupplier(name, supplier);
+         }
          return product;
     }
 
     @Override
     public Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY) {
         Supplier supplier = new Supplier(name,cuil,address,coordX,coordY);
-        repo.saveSupplier(supplier);
+        Boolean was_inserted = this.getRepo().saveSupplier(supplier);
+        if (!was_inserted){
+            supplier = this.getRepo().getSupplier(cuil);
+        }
         return supplier;
     }
 
     @Override
     public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
         User user = new User(email,password,username,name,dateOfBirth);
-        repo.saveUser(user);
-        //System.out.println(repo.getLastUserInserted().getObjectId());
-        //return repo.getLastUserInserted();
+        this.getRepo().saveUser(user);
         return user;
     }
 
     @Override
     public Product updateProductPrice(ObjectId id, Float price, Date startDate) throws DBliveryException {
-        Price newPrice= new Price(price, startDate);
-    	repo.UpdateProductPrice(id, newPrice);
-    	return null;
+        Product product = this.getRepo().getProduct(id);
+        if(product.getObjectId() != null) {
+            this.getRepo().replaceProduct(product.updateProductPrice(price, startDate));
+            return product;
+        }else {throw new DBliveryException("The product don't exist");}
     }
 
     @Override
@@ -85,9 +97,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Order createOrder(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
-    	Order order = new Order(dateOfOrder,address,coordX,coordY,client);
-        repo.saveOrder(order);
-        return order;
+        return null;
     }
 
     @Override
@@ -147,6 +157,6 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public List<Product> getProductsByName(String name) {
-        return null;
+        return this.getRepo().getProductByName(name);
     }
 }

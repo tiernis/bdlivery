@@ -1,6 +1,7 @@
 package ar.edu.unlp.info.bd2.model;
 
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -16,8 +17,6 @@ public class Product {
     private Float weight;
     private ObjectId supplier;
     private List<Price> allPrices = new ArrayList<>();
-    
-    public Product() {}
 
     public Product(){
 
@@ -65,6 +64,7 @@ public class Product {
 		return allPrices;
 	}
 
+	@BsonIgnore
 	public List<Price> getPrices() {
         return allPrices;
     }

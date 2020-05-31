@@ -14,7 +14,7 @@ public class Order {
 	private String address;
 	private Float coordX;
 	private Float coordY;
-	private ObjectId client;
+	private User client;
 	private ObjectId delivery;
 	private List<OrderStatus> status = new ArrayList<>();
 	private List<ObjectId> products = new ArrayList<>();
@@ -28,7 +28,7 @@ public class Order {
 		this.address=address;
 		this.coordX=coordX;
 		this.coordY=coordY;
-		this.client=client.getObjectId();
+		this.client=client;
 		OrderStatus newStatus= new OrderStatus("Pending", dateOfOrder);
 		status.add(newStatus);
 		this.cost=0F;
@@ -43,7 +43,7 @@ public class Order {
         return status;
     }
 
-    public ObjectId getClient() {
+    public User getClient() {
         return client;
     }
 
