@@ -30,35 +30,39 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier, Date date) {
-        return null;
+        Product product = new Product(name, weight, supplier.getObjectId());
+        this.getRepo().saveProduct(product.updateProductPrice(price, date));
+        return product;
     }
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
-    	 Product product = new Product(name, price, weight, supplier.getObjectId());
-         repo.saveProduct(product);
+    	 Product product = new Product(name, weight, supplier.getObjectId());
+         this.getRepo().saveProduct(product.updateProductPrice(price, new Date()));
          return product;
     }
 
     @Override
     public Supplier createSupplier(String name, String cuil, String address, Float coordX, Float coordY) {
         Supplier supplier = new Supplier(name,cuil,address,coordX,coordY);
-        repo.saveSupplier(supplier);
+        this.getRepo().saveSupplier(supplier);
         return supplier;
     }
 
     @Override
     public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
         User user = new User(email,password,username,name,dateOfBirth);
-        repo.saveUser(user);
-        //System.out.println(repo.getLastUserInserted().getObjectId());
-        //return repo.getLastUserInserted();
+        this.getRepo().saveUser(user);
         return user;
     }
 
     @Override
     public Product updateProductPrice(ObjectId id, Float price, Date startDate) throws DBliveryException {
-        return null;
+        Product product = this.getRepo().getProduct(id);
+        if(product.getObjectId() != null) {
+            this.getRepo().replaceProduct(product.updateProductPrice(price, startDate));
+            return product;
+        }else {throw new DBliveryException("The product don't exist");}
     }
 
     @Override
@@ -143,6 +147,6 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public List<Product> getProductsByName(String name) {
-        return null;
+        return this.getRepo().getProductByName(name);
     }
 }
