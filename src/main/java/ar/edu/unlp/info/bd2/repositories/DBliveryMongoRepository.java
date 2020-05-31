@@ -6,15 +6,17 @@ import static com.mongodb.client.model.Filters.regex;
 
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.mongo.*;
+
+import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Updates;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.json.JsonParseException;
@@ -31,34 +33,69 @@ public class DBliveryMongoRepository {
         collection.insertOne(user);
     }
 
+    public User getLastUserInserted(){
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        Block<User> printBlock = new Block<User>() {
+            @Override
+            public void apply(final User user) {
+                System.out.println(user);
+            }
+        };
+
+        User final_user = null;
+
+        for (User user : collection.find().sort(new Document("_id", -1)).limit(1)) {
+            final_user = user;
+        }
+
+        return final_user;
+    }
+    
+
     public void saveProduct(Product product){
         MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        collection.insertOne(product);
-    }
-
-    public Product getProduct(ObjectId id){
-        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        return collection.find(eq("_id", id)).first();
-    }
-
-    public void replaceProduct(Product product){
-        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        collection.replaceOne(eq("_id", product.getObjectId()), product);
+        BasicDBObject whereQuery = new BasicDBObject();
+        whereQuery.put("name", product.getName());
+        FindIterable<Product> docsIterable = collection.find(whereQuery); 
+        try (MongoCursor<Product> iterator = docsIterable.iterator()){
+        int count = 0;
+        while (iterator.hasNext()) {
+        iterator.next();
+        count++;
+        }
+        if( count == 0){
+        	collection.insertOne(product);
+        }
+        }
     }
     
     public void saveSupplier(Supplier supplier){
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
-        collection.insertOne(supplier);
-    }
-
-    public List<Product> getProductByName(String name) {
-        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
-        ArrayList<Product> list = new ArrayList<>();
-        for (Product dbObject : collection.find(eq("name", name)))
-        {
-            list.add(dbObject);
+        BasicDBObject whereQuery = new BasicDBObject();
+        whereQuery.put("cuil", supplier.getCuil());
+        FindIterable<Supplier> docsIterable = collection.find(whereQuery); 
+        try (MongoCursor<Supplier> iterator = docsIterable.iterator()){
+        int count = 0;
+        while (iterator.hasNext()) {
+        iterator.next();
+        count++;
         }
-        return list;
+        if( count == 0){
+        	collection.insertOne(supplier);
+        }
+        }
+    }
+    
+    public void saveOrder(Order order){
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        collection.insertOne(order);
+    }
+    
+    public void UpdateProductPrice(ObjectId product, Price newPrice) {
+    	MongoCollection<Supplier> collection = this.getDb().getCollection("Product", Supplier.class);
+    	collection.updateOne(eq("_id", product), Updates.addToSet("prices", newPrice));
+    	BasicDBObject updateQuery = new BasicDBObject(); updateQuery.append("$set", new BasicDBObject().append("price", newPrice.getPrice()));
+    	collection.updateOne(eq("_id", product), updateQuery);
     }
     
     
@@ -94,31 +131,4 @@ public class DBliveryMongoRepository {
         return stream.collect(Collectors.toList());
     }
 
-
-    //RETAZOS DE CODIGO QUE EN ALGUN MOMENTO USE
-
-        /*public User getLastUserInserted(){
-        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
-        Block<User> printBlock = new Block<User>() {
-            @Override
-            public void apply(final User user) {
-                System.out.println(user);
-            }
-        };
-
-        User final_user = null;
-
-        for (User user : collection.find().sort(new Document("_id", -1)).limit(1)) {
-            final_user = user;
-        }
-
-        return final_user;
-    }*/
-
-            /*AggregateIterable<Product> product = collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("_id", id))));
-        for (Product dbObject : product)
-        {
-            System.out.println(dbObject.getAllPrices().get(0).getPrice());
-        }
-        return new Product();*/
 }
