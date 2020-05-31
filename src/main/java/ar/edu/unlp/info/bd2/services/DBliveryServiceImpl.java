@@ -105,59 +105,89 @@ public class DBliveryServiceImpl implements DBliveryService {
     @Override
     public Order addProduct(ObjectId order, Long quantity, Product product) throws DBliveryException {
         Order theOrder=this.getRepo().getOrder(order);
-        Order modifiedOrder=theOrder.addProduct(quantity, product);
-        this.getRepo().updateOrder(modifiedOrder);
-    	return modifiedOrder;
+        if(theOrder.getObjectId() != null) {
+        	Order modifiedOrder=theOrder.addProduct(quantity, product);
+        	this.getRepo().updateOrder(modifiedOrder);
+        	return modifiedOrder;
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public Order deliverOrder(ObjectId order, User deliveryUser) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.deliver(deliveryUser);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order deliverOrder(ObjectId order, User deliveryUser, Date date) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.deliver(deliveryUser,date);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order cancelOrder(ObjectId order) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.cancel();
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order cancelOrder(ObjectId order, Date date) throws DBliveryException {
-        return null;
+        Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.cancel(date);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order finishOrder(ObjectId order) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.finish();
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order finishOrder(ObjectId order, Date date) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.finish(date);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public boolean canCancel(ObjectId order) throws DBliveryException {
-        return false;
+        Order theOrder=this.getRepo().getOrder(order);
+        if(theOrder.getObjectId() != null) {
+        	return theOrder.canCancel();
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public boolean canFinish(ObjectId id) throws DBliveryException {
-        return false;
+    	Order theOrder=this.getRepo().getOrder(id);
+        if(theOrder.getObjectId() != null) {
+        	return theOrder.canFinish();
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public boolean canDeliver(ObjectId order) throws DBliveryException {
-        return false;
+    	Order theOrder=this.getRepo().getOrder(order);
+        if(theOrder.getObjectId() != null) {
+        	return theOrder.canDeliver();
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public OrderStatus getActualStatus(ObjectId order) {
-        return null;
+    	Order theOrder=this.getRepo().getOrder(order);
+    	return theOrder.getActualStatus();
     }
 
     @Override

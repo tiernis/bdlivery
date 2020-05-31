@@ -1,7 +1,11 @@
 package ar.edu.unlp.info.bd2.model;
 
 import org.bson.types.ObjectId;
+
+import ar.edu.unlp.info.bd2.repositories.DBliveryException;
+
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -113,5 +117,71 @@ public class Order {
 		this.setCost(newProdCost);
 		return this;
 	}
+	
+	@BsonIgnore
+	public OrderStatus getActualStatus() {
+		return this.getStatus().get(this.getStatus().size()-1);
+	}
     
+	public Boolean canCancel() {
+		return (this.getActualStatus().getStatus().equals("Pending"));
+	}
+	
+	public Order cancel() throws DBliveryException {
+		if(this.canCancel()) {
+			OrderStatus newStatus = new OrderStatus("Cancelled", new Date());
+			this.getStatus().add(newStatus);
+			return this;
+		}else { throw new DBliveryException("The order can't be canceled");}
+	}
+	
+	public Order cancel(Date date) throws DBliveryException {
+		if(this.canCancel()) {
+			OrderStatus newStatus = new OrderStatus("Cancelled", date);
+			this.getStatus().add(newStatus);
+			return this;
+		}else { throw new DBliveryException("The order can't be canceled");}
+	}
+
+	public Boolean canDeliver() {
+		return ((this.getActualStatus().getStatus().equals("Pending")) && (this.getProducts().size() != 0));
+	}
+	
+	public Order deliver(User deliveryUser, Date date) throws DBliveryException {
+		if(this.canDeliver()) {
+			this.setDeliveryUser(deliveryUser);
+			OrderStatus newStatus= new OrderStatus("Send", date);
+			this.getStatus().add(newStatus);
+			return this;
+		}else { throw new DBliveryException("The order can't be delivered");}
+	}
+	
+	public Order deliver(User deliveryUser) throws DBliveryException {
+		if(this.canDeliver()) {
+			this.setDeliveryUser(deliveryUser);
+			OrderStatus newStatus= new OrderStatus("Send", new Date());
+			this.getStatus().add(newStatus);
+			return this;
+		}else { throw new DBliveryException("The order can't be delivered");}
+	}
+	
+	public Boolean canFinish() {
+		return (this.getActualStatus().getStatus().equals("Send"));
+	}
+	
+	public Order finish(Date date) throws DBliveryException {
+		if(this.canFinish()) {
+			OrderStatus newStatus= new OrderStatus("Delivered", date);
+			this.getStatus().add(newStatus);
+			return this;
+		}else { throw new DBliveryException("The order can't be finished");}
+	}
+	
+	public Order finish() throws DBliveryException {
+		if(this.canFinish()) {
+			OrderStatus newStatus= new OrderStatus("Delivered", new Date());
+			this.getStatus().add(newStatus);
+			return this;
+		}else { throw new DBliveryException("The order can't be finished");}
+	}
 }
