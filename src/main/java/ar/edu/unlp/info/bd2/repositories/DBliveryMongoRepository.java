@@ -53,13 +53,15 @@ public class DBliveryMongoRepository {
         this.createProductIndex();
     }
 
-    public void saveUser(User user) throws MongoWriteException {
+    public Boolean saveUser(User user) throws MongoWriteException {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
         try {
             collection.insertOne(user);
+            return true;
         }
         catch(MongoWriteException e) {
             System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
+            return false;
         }
     }
 
@@ -112,6 +114,21 @@ public class DBliveryMongoRepository {
     public Supplier getSupplier(String cuil) {
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
         return collection.find(eq("cuil", cuil)).first();
+    }
+    
+    public User getUserById(ObjectId objectId) {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        return collection.find(eq("_id", objectId)).first();
+    }
+    
+    public User getUserByEmail(String email) {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        return collection.find(eq("email", email)).first();
+    }
+    
+    public User getUserByUsername(String username) {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        return collection.find(eq("username", username)).first();
     }
 
     public void replaceProduct(Product product){

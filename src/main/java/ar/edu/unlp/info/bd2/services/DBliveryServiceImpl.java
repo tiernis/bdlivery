@@ -62,7 +62,10 @@ public class DBliveryServiceImpl implements DBliveryService {
     @Override
     public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
         User user = new User(email,password,username,name,dateOfBirth);
-        this.getRepo().saveUser(user);
+        Boolean was_inserted =this.getRepo().saveUser(user);
+        if (!was_inserted){
+            user = this.getRepo().getUserByUsername(username);
+        }
         return user;
     }
 
@@ -77,17 +80,17 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Optional<User> getUserById(ObjectId id) {
-        return Optional.empty();
+        return Optional.of(this.getRepo().getUserById(id));
     }
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        return Optional.empty();
+    	return Optional.of(this.getRepo().getUserByEmail(email));
     }
 
     @Override
     public Optional<User> getUserByUsername(String username) {
-        return Optional.empty();
+    	return Optional.of(this.getRepo().getUserByUsername(username));
     }
 
     @Override
