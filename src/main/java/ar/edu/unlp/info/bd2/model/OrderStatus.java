@@ -10,7 +10,6 @@ public class OrderStatus {
 	public OrderStatus() {}
 	
 	public OrderStatus(String status, Date dateStatus) {
-		super();
 		this.status = status;
 		this.dateStatus = dateStatus;
 	}
@@ -20,6 +19,13 @@ public class OrderStatus {
 	public Date getDateStatus() {
 		return dateStatus;
 	}
-	
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setDateStatus(Date dateStatus) {
+		this.dateStatus = dateStatus;
+	}
 	
 }

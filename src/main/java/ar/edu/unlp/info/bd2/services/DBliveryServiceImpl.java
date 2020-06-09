@@ -62,7 +62,10 @@ public class DBliveryServiceImpl implements DBliveryService {
     @Override
     public User createUser(String email, String password, String username, String name, Date dateOfBirth) {
         User user = new User(email,password,username,name,dateOfBirth);
-        this.getRepo().saveUser(user);
+        Boolean was_inserted =this.getRepo().saveUser(user);
+        if (!was_inserted){
+            user = this.getRepo().getUserByUsername(username);
+        }
         return user;
     }
 
@@ -77,17 +80,17 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     @Override
     public Optional<User> getUserById(ObjectId id) {
-        return Optional.empty();
+        return Optional.of(this.getRepo().getUserById(id));
     }
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        return Optional.empty();
+    	return Optional.of(this.getRepo().getUserByEmail(email));
     }
 
     @Override
     public Optional<User> getUserByUsername(String username) {
-        return Optional.empty();
+    	return Optional.of(this.getRepo().getUserByUsername(username));
     }
 
     @Override
@@ -105,63 +108,148 @@ public class DBliveryServiceImpl implements DBliveryService {
     @Override
     public Order addProduct(ObjectId order, Long quantity, Product product) throws DBliveryException {
         Order theOrder=this.getRepo().getOrder(order);
-        Order modifiedOrder=theOrder.addProduct(quantity, product);
-        this.getRepo().updateOrder(modifiedOrder);
-    	return modifiedOrder;
+        if(theOrder.getObjectId() != null) {
+        	Order modifiedOrder=theOrder.addProduct(quantity, product);
+        	this.getRepo().updateOrder(modifiedOrder);
+        	return modifiedOrder;
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public Order deliverOrder(ObjectId order, User deliveryUser) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.deliver(deliveryUser);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order deliverOrder(ObjectId order, User deliveryUser, Date date) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.deliver(deliveryUser,date);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order cancelOrder(ObjectId order) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.cancel();
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order cancelOrder(ObjectId order, Date date) throws DBliveryException {
-        return null;
+        Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.cancel(date);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order finishOrder(ObjectId order) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.finish();
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public Order finishOrder(ObjectId order, Date date) throws DBliveryException {
-        return null;
+    	Order theOrder= this.getRepo().getOrder(order);
+        Order modifiedOrder= theOrder.finish(date);
+        this.getRepo().updateOrder(modifiedOrder);
+        return modifiedOrder;
     }
 
     @Override
     public boolean canCancel(ObjectId order) throws DBliveryException {
-        return false;
+        Order theOrder=this.getRepo().getOrder(order);
+        if(theOrder.getObjectId() != null) {
+        	return theOrder.canCancel();
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public boolean canFinish(ObjectId id) throws DBliveryException {
-        return false;
+    	Order theOrder=this.getRepo().getOrder(id);
+        if(theOrder.getObjectId() != null) {
+        	return theOrder.canFinish();
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public boolean canDeliver(ObjectId order) throws DBliveryException {
-        return false;
+    	Order theOrder=this.getRepo().getOrder(order);
+        if(theOrder.getObjectId() != null) {
+        	return theOrder.canDeliver();
+        }else {throw new DBliveryException("The order don't exist");}
     }
 
     @Override
     public OrderStatus getActualStatus(ObjectId order) {
-        return null;
+    	Order theOrder=this.getRepo().getOrder(order);
+    	return theOrder.getActualStatus();
     }
 
     @Override
     public List<Product> getProductsByName(String name) {
         return this.getRepo().getProductByName(name);
     }
+    
+    @Override
+    public List<Order> getAllOrdersMadeByUser(String username) throws DBliveryException{
+    	return null;
+    }
+    
+    @Override
+    public List<Supplier> getTopNSuppliersInSentOrders(int n){
+    	return null;
+    }
+
+	@Override
+	public List<Order> getPendingOrders() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getSentOrders() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
+		return null;
+	}
+
+	@Override
+	public List<Order> getDeliveredOrdersForUser(String username) {
+		return null;
+	}
+
+	@Override
+	public Product getBestSellingProduct() {
+		return null;
+	}
+
+	@Override
+	public List<Product> getProductsOnePrice() {
+		return null;
+	}
+
+	@Override
+	public List<Product> getSoldProductsOn(Date day) {
+		return null;
+	}
+
+	@Override
+	public Product getMaxWeigth() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getOrderNearPlazaMoreno() {
+		return null;
+	}
 }

@@ -53,13 +53,15 @@ public class DBliveryMongoRepository {
         this.createProductIndex();
     }
 
-    public void saveUser(User user) throws MongoWriteException {
+    public Boolean saveUser(User user) throws MongoWriteException {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
         try {
             collection.insertOne(user);
+            return true;
         }
         catch(MongoWriteException e) {
             System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
+            return false;
         }
     }
 
@@ -113,6 +115,21 @@ public class DBliveryMongoRepository {
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
         return collection.find(eq("cuil", cuil)).first();
     }
+    
+    public User getUserById(ObjectId objectId) {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        return collection.find(eq("_id", objectId)).first();
+    }
+    
+    public User getUserByEmail(String email) {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        return collection.find(eq("email", email)).first();
+    }
+    
+    public User getUserByUsername(String username) {
+        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
+        return collection.find(eq("username", username)).first();
+    }
 
     public void replaceProduct(Product product){
         MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
@@ -158,6 +175,22 @@ public class DBliveryMongoRepository {
                                 Arrays.asList(
                                         match(eq("source", source.getObjectId())),
                                         lookup(destCollection, "destination", "_id", "_matches"),
+                                        unwind("$_matches"),
+                                        replaceRoot("$_matches")));
+        Stream<T> stream =
+                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
+        return stream.collect(Collectors.toList());
+    }
+    
+    public <T extends PersistentObject> List<T> getObjectsAssociatedWith(
+            ObjectId objectId, Class<T> objectClass, String association, String destCollection) {
+        AggregateIterable<T> iterable =
+                this.getDb()
+                        .getCollection(association, objectClass)
+                        .aggregate(
+                                Arrays.asList(
+                                        match(eq("destination", objectId)),
+                                        lookup(destCollection, "source", "_id", "_matches"),
                                         unwind("$_matches"),
                                         replaceRoot("$_matches")));
         Stream<T> stream =
