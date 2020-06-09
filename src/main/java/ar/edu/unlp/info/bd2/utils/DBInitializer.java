@@ -506,6 +506,7 @@ public class DBInitializer {
         Order order001 = service.createOrder(sdf.parse("3/1/2014"), "Calle 39 Nº325", -34.946131F, -57.944014F, user149);
         service.addProduct(order001.getObjectId(),1L, product040);
         service.addProduct(order001.getObjectId(),4L, product079);
+        service.getOrderById(order001.getObjectId()).get().getAmount();
         Order order002 = service.createOrder(sdf.parse("3/9/2015"), "Calle 40 Nº1907", -34.948543F, -57.991371F, user115);
         service.addProduct(order002.getObjectId(),4L, product103);
         service.deliverOrder(order002.getObjectId(), user195, sdf.parse("4/9/2015"));

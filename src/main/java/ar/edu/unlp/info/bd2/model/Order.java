@@ -12,10 +12,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
+
 public class Order {
 	@BsonId
 	private ObjectId objectId;
 	private String address;
+	private Point position;
 	private Float coordX;
 	private Float coordY;
 	private User client;
@@ -30,12 +34,22 @@ public class Order {
 	
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
 		this.setAddress(address);
+		Position pos = new Position(coordX,coordY);
+		this.position = new Point(pos);
 		this.setCoordX(coordX);
 		this.setCoordY(coordY);
 		this.setClient(client);
 		OrderStatus newStatus= new OrderStatus("Pending", dateOfOrder);
 		status.add(newStatus);
 		this.setCost(0F);
+	}
+	
+	public Point getPosition() {
+		return position;
+	}
+	
+	public void setPosition(Point position) {
+		this.position= position;
 	}
 
     public String getAddress() {
@@ -183,5 +197,9 @@ public class Order {
 			this.getStatus().add(newStatus);
 			return this;
 		}else { throw new DBliveryException("The order can't be finished");}
+	}
+	
+	public Float getAmount() {
+		return this.cost;
 	}
 }

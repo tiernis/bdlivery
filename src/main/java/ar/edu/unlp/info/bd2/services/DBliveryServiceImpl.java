@@ -197,4 +197,59 @@ public class DBliveryServiceImpl implements DBliveryService {
     public List<Product> getProductsByName(String name) {
         return this.getRepo().getProductByName(name);
     }
+    
+    @Override
+    public List<Order> getAllOrdersMadeByUser(String username) throws DBliveryException{
+    	return null;
+    }
+    
+    @Override
+    public List<Supplier> getTopNSuppliersInSentOrders(int n){
+    	return null;
+    }
+
+	@Override
+	public List<Order> getPendingOrders() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getSentOrders() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
+		return null;
+	}
+
+	@Override
+	public List<Order> getDeliveredOrdersForUser(String username) {
+		return null;
+	}
+
+	@Override
+	public Product getBestSellingProduct() {
+		return null;
+	}
+
+	@Override
+	public List<Product> getProductsOnePrice() {
+		return null;
+	}
+
+	@Override
+	public List<Product> getSoldProductsOn(Date day) {
+		return null;
+	}
+
+	@Override
+	public Product getMaxWeigth() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getOrderNearPlazaMoreno() {
+		return null;
+	}
 }
