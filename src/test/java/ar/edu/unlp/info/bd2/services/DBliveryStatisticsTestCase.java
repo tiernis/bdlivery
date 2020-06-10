@@ -97,7 +97,6 @@ public class DBliveryStatisticsTestCase {
         assertEquals(18,orders.size());
     }
 
-    //ESTE TEST ESTA RANCIO COMO EL SOLO. NO HAY NINGUNA ORDEN DE ESE USER. CONTACTAR AL AYUDANTE.
     @Test
     public void testGetDeliveredOrdersForUser() {
         List<Order> orders = this.service.getDeliveredOrdersForUser("luzmartnez660");
@@ -109,7 +108,7 @@ public class DBliveryStatisticsTestCase {
         Product product = this.service.getBestSellingProduct();
         assertEquals("Pizza napolitana",product.getName());
     }
-    //
+    
     @Test
     public void testGetProductsOnePrice() {
         List<Product> products = this.service.getProductsOnePrice();

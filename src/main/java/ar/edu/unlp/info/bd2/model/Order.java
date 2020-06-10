@@ -199,6 +199,7 @@ public class Order {
 		}else { throw new DBliveryException("The order can't be finished");}
 	}
 	
+	@BsonIgnore	
 	public Float getAmount() {
 		return this.cost;
 	}

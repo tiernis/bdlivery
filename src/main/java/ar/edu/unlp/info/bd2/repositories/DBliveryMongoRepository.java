@@ -10,6 +10,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.*;
+
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -17,6 +19,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.mongodb.client.model.*;
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
+
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -223,12 +228,65 @@ public class DBliveryMongoRepository {
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
         for (Order order : collection.aggregate(Arrays.asList(
                 match(eq("actualStatus.status", "Delivered")),
-                match(eq("username", username))
+                match(eq("client.username", username))
         ))) {
             list.add(order);
         }
         return list;
     }
+    
+    public List<Product> getProductsOnePrice(){
+    	ArrayList<Product> list = new ArrayList<>();
+        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
+
+        for (Product dbObject : collection.find(size("allPrices",1)))
+        {
+            list.add(dbObject);
+        }
+        return list;
+    }
+    
+    //Creo que hay problemas al comparar las fechas
+    public List<Product> getSoldProductsOn(Date day) {
+    	String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String aDay= simpleDateFormat.format(day);
+        ArrayList<Product> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        for (Order dbObject : collection.find(eq("status.0.dateStatus", aDay)))
+        {
+        	for (ProductOrder aProduct: dbObject.getProducts())
+            list.add(aProduct.getProduct());
+        }
+        return list;
+    }
+    
+    public List<Order> getOrderNearPlazaMoreno() {
+        ArrayList<Order> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        Point refPoint = new Point(new Position(-34.921236,-57.954571));
+        for (Order order : collection.find(Filters.near("position", refPoint, 400.0, 0.0))) 
+        	{
+            list.add(order);
+        }
+        return list;
+    }
+    
+    /*public List<Supplier> getTopNSuppliers() {
+        ArrayList<Product> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        for (Order dbObject : collection.find())
+        {
+        	for (ProductOrder aProduct: dbObject.getProducts())
+            list.add(aProduct.getProduct());
+        }
+        return list;
+        
+        db.getCollection('Order').aggregate([
+    {"$group" : {_id:"$client", count:{$sum:1}}},
+    {$sort:{"count":-1}}
+])
+    }*/
 
     //RETAZOS DE CODIGO QUE EN ALGUN MOMENTO USE
 
