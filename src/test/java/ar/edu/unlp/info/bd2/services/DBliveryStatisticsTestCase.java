@@ -38,20 +38,20 @@ public class DBliveryStatisticsTestCase {
     @Autowired
     DBInitializer initializer;
 
-    @Autowired
-    private MongoClient client;
+    /*@Autowired
+    private MongoClient client;*/
 
     @Autowired
     DBliveryStatisticsService service;
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-    @BeforeAll
+    /*@BeforeAll
     public void prepareDB() throws Exception {
         this.client.getDatabase("bd2_grupo" + this.getGroupNumber()).drop();
         this.initializer.prepareDB();
         this.client.getDatabase("bd2_grupo" + this.getGroupNumber()).getCollection("Order").createIndex(Indexes.geo2dsphere("position"));
-    }
+    }*/
 
     private Integer getGroupNumber() { return 11; }
 
@@ -97,6 +97,7 @@ public class DBliveryStatisticsTestCase {
         assertEquals(18,orders.size());
     }
 
+    //ESTE TEST ESTA RANCIO COMO EL SOLO. NO HAY NINGUNA ORDEN DE ESE USER. CONTACTAR AL AYUDANTE.
     @Test
     public void testGetDeliveredOrdersForUser() {
         List<Order> orders = this.service.getDeliveredOrdersForUser("luzmartnez660");

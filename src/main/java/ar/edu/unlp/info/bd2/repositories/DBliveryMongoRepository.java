@@ -1,10 +1,12 @@
 package ar.edu.unlp.info.bd2.repositories;
 
+import static com.mongodb.client.model.Accumulators.first;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.mongo.*;
+import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.*;
@@ -14,12 +16,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.*;
 import org.bson.BsonDocument;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.json.JsonParseException;
 import org.bson.json.JsonWriter;
 import org.bson.types.ObjectId;
@@ -28,6 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DBliveryMongoRepository {
 
     @Autowired private MongoClient client;
+
+    public MongoDatabase getDb() {
+        return this.client.getDatabase("bd2_grupo" + this.getGroupNumber() );
+    }
+
+    private Integer getGroupNumber() { return 11; }
 
     private void createUserIndex(){
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
@@ -151,51 +157,77 @@ public class DBliveryMongoRepository {
         collection.replaceOne(eq("_id", order.getObjectId()), order);
     }
 
-    //MÉTODOS QUE NO ENTIENDO
-
-    public void saveAssociation(PersistentObject source, PersistentObject destination, String associationName) {
-        Association association = new Association(source.getObjectId(), destination.getObjectId());
-        this.getDb()
-                .getCollection(associationName, Association.class)
-                .insertOne(association);
+    public List<Order> getAllOrdersMadeByUser(String username) {
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        ArrayList<Order> list = new ArrayList<>();
+        for (Order dbObject : collection.find(eq("client.username", username)))
+        {
+            list.add(dbObject);
+        }
+        return list;
     }
 
-    public MongoDatabase getDb() {
-        return this.client.getDatabase("bd2_grupo" + this.getGroupNumber() );
+    public Product getMaxWeigth() {
+        MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
+        return collection.find().sort(new Document("weight",-1)).first();
     }
 
-    private Integer getGroupNumber() { return 11; }
+    /*public List<Supplier> getTopNSuppliersInSentOrders(int n) {
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        for (Order order : collection.aggregate(Arrays.asList(
+            match(eq("actualStatus.status", "Send")),
+                group("$supplier")
+        ))) {
+            final_user = user;
+        }
+        return null;
+    }*/
 
-    public <T extends PersistentObject> List<T> getAssociatedObjects(
-            PersistentObject source, Class<T> objectClass, String association, String destCollection) {
-        AggregateIterable<T> iterable =
-                this.getDb()
-                        .getCollection(association, objectClass)
-                        .aggregate(
-                                Arrays.asList(
-                                        match(eq("source", source.getObjectId())),
-                                        lookup(destCollection, "destination", "_id", "_matches"),
-                                        unwind("$_matches"),
-                                        replaceRoot("$_matches")));
-        Stream<T> stream =
-                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
-        return stream.collect(Collectors.toList());
+    public List<Order> getPendingOrders() {
+        ArrayList<Order> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+
+        for (Order dbObject : collection.find(eq("actualStatus.status", "Pending")))
+        {
+            list.add(dbObject);
+        }
+        return list;
     }
-    
-    public <T extends PersistentObject> List<T> getObjectsAssociatedWith(
-            ObjectId objectId, Class<T> objectClass, String association, String destCollection) {
-        AggregateIterable<T> iterable =
-                this.getDb()
-                        .getCollection(association, objectClass)
-                        .aggregate(
-                                Arrays.asList(
-                                        match(eq("destination", objectId)),
-                                        lookup(destCollection, "source", "_id", "_matches"),
-                                        unwind("$_matches"),
-                                        replaceRoot("$_matches")));
-        Stream<T> stream =
-                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
-        return stream.collect(Collectors.toList());
+
+    public List<Order> getSentOrders() {
+        ArrayList<Order> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+
+        for (Order dbObject : collection.find(eq("actualStatus.status", "Send")))
+        {
+            list.add(dbObject);
+        }
+        return list;
+    }
+
+    public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
+        ArrayList<Order> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        for (Order order : collection.aggregate(Arrays.asList(
+                match(eq("actualStatus.status", "Delivered")),
+                match(gt("actualStatus.dateStatus", startDate)),
+                match(lt("actualStatus.dateStatus", endDate))
+        ))) {
+            list.add(order);
+        }
+        return list;
+    }
+
+    public List<Order> getDeliveredOrdersForUser(String username) {
+        ArrayList<Order> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        for (Order order : collection.aggregate(Arrays.asList(
+                match(eq("actualStatus.status", "Delivered")),
+                match(eq("username", username))
+        ))) {
+            list.add(order);
+        }
+        return list;
     }
 
     //RETAZOS DE CODIGO QUE EN ALGUN MOMENTO USE
@@ -218,10 +250,55 @@ public class DBliveryMongoRepository {
         return final_user;
     }*/
 
+
             /*AggregateIterable<Product> product = collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("_id", id))));
         for (Product dbObject : product)
         {
             System.out.println(dbObject.getAllPrices().get(0).getPrice());
         }
-        return new Product();*/
+        return new Product();
+
+            //MÉTODOS QUE NO ENTIENDO
+
+    public void saveAssociation(PersistentObject source, PersistentObject destination, String associationName) {
+        Association association = new Association(source.getObjectId(), destination.getObjectId());
+        this.getDb()
+                .getCollection(associationName, Association.class)
+                .insertOne(association);
+    }
+
+            public <T extends PersistentObject> List<T> getAssociatedObjects(
+            PersistentObject source, Class<T> objectClass, String association, String destCollection) {
+        AggregateIterable<T> iterable =
+                this.getDb()
+                        .getCollection(association, objectClass)
+                        .aggregate(
+                                Arrays.asList(
+                                        match(eq("source", source.getObjectId())),
+                                        lookup(destCollection, "destination", "_id", "_matches"),
+                                        unwind("$_matches"),
+                                        replaceRoot("$_matches")));
+        Stream<T> stream =
+                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
+        return stream.collect(Collectors.toList());
+    }
+
+    public <T extends PersistentObject> List<T> getObjectsAssociatedWith(
+            ObjectId objectId, Class<T> objectClass, String association, String destCollection) {
+        AggregateIterable<T> iterable =
+                this.getDb()
+                        .getCollection(association, objectClass)
+                        .aggregate(
+                                Arrays.asList(
+                                        match(eq("destination", objectId)),
+                                        lookup(destCollection, "source", "_id", "_matches"),
+                                        unwind("$_matches"),
+                                        replaceRoot("$_matches")));
+        Stream<T> stream =
+                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
+        return stream.collect(Collectors.toList());
+    }
+        */
+
+
 }

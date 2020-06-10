@@ -132,7 +132,7 @@ public class Order {
 		return this;
 	}
 	
-	@BsonIgnore
+	//@BsonIgnore
 	public OrderStatus getActualStatus() {
 		return this.getStatus().get(this.getStatus().size()-1);
 	}

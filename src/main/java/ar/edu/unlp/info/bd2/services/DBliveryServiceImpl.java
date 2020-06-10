@@ -18,7 +18,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
     public DBliveryServiceImpl(DBliveryMongoRepository repository) {
         this.setRepo(repository);
-        this.getRepo().initialize();
+        //this.getRepo().initialize();
     }
 
     public void setRepo(DBliveryMongoRepository repo) {
@@ -200,32 +200,33 @@ public class DBliveryServiceImpl implements DBliveryService {
     
     @Override
     public List<Order> getAllOrdersMadeByUser(String username) throws DBliveryException{
-    	return null;
+    	return this.getRepo().getAllOrdersMadeByUser(username);
     }
     
     @Override
     public List<Supplier> getTopNSuppliersInSentOrders(int n){
-    	return null;
+    	//return this.getRepo().getTopNSuppliersInSentOrders(n);
+        return null;
     }
 
 	@Override
 	public List<Order> getPendingOrders() {
-		return null;
+		return this.getRepo().getPendingOrders();
 	}
 
 	@Override
 	public List<Order> getSentOrders() {
-		return null;
+		return this.getRepo().getSentOrders();
 	}
 
 	@Override
 	public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
-		return null;
+		return this.getRepo().getDeliveredOrdersInPeriod(startDate, endDate);
 	}
 
 	@Override
 	public List<Order> getDeliveredOrdersForUser(String username) {
-		return null;
+		return this.getRepo().getDeliveredOrdersForUser(username);
 	}
 
 	@Override
@@ -245,7 +246,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
 	@Override
 	public Product getMaxWeigth() {
-		return null;
+		return this.getRepo().getMaxWeigth();
 	}
 
 	@Override
