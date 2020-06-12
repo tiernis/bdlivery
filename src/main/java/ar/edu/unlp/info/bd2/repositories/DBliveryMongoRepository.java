@@ -71,7 +71,6 @@ public class DBliveryMongoRepository {
             return true;
         }
         catch(MongoWriteException e) {
-            System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
             return false;
         }
     }
@@ -83,7 +82,6 @@ public class DBliveryMongoRepository {
             return true;
         }
         catch(MongoWriteException e) {
-            System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
             return false;
         }
     }
@@ -95,7 +93,6 @@ public class DBliveryMongoRepository {
             return true;
         }
         catch(MongoWriteException e) {
-            System.out.println("Podés dejar de intentar insertar documentos repetidos?! Basta che! No va más esto!");
             collection.deleteOne(eq("_id", this.getProductByName(product.getName()).get(0).getObjectId()));
             collection.insertOne(product);
             return false;
@@ -127,6 +124,11 @@ public class DBliveryMongoRepository {
         return collection.find(eq("cuil", cuil)).first();
     }
     
+    public Supplier getSupplier(ObjectId id){
+        MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
+        return collection.find(eq("_id", id)).first();
+    }
+    
     public User getUserById(ObjectId objectId) {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
         return collection.find(eq("_id", objectId)).first();
@@ -154,7 +156,8 @@ public class DBliveryMongoRepository {
     
     public Order getOrder(ObjectId id){
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        return collection.find(eq("_id", id)).first();
+        Order o= collection.find(eq("_id", id)).first();
+        return o;
     }
     
     public void updateOrder(Order order){
@@ -246,20 +249,20 @@ public class DBliveryMongoRepository {
         return list;
     }
     
-    //Creo que hay problemas al comparar las fechas
-    public List<Product> getSoldProductsOn(Date day) {
-    	String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String aDay= simpleDateFormat.format(day);
+    /*
+    @SuppressWarnings("deprecation")
+	public List<Product> getSoldProductsOn(Date day) {
         ArrayList<Product> list = new ArrayList<>();
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        for (Order dbObject : collection.find(eq("status.0.dateStatus", aDay)))
-        {
-        	for (ProductOrder aProduct: dbObject.getProducts())
-            list.add(aProduct.getProduct());
+        Date endDay= day;
+        endDay.setDate(day.getDay()+1);
+        for (Order dbObject : collection.find(and(gte("status.0.dateStatus",day),lt("status.0.dateStatus", endDay)))) {
+        	for (ProductOrder aProduct: dbObject.getProducts()) {
+                list.add(aProduct.getProduct());
+    		}
         }
         return list;
-    }
+    }*/
     
     public List<Order> getOrderNearPlazaMoreno() {
         ArrayList<Order> list = new ArrayList<>();
@@ -272,22 +275,38 @@ public class DBliveryMongoRepository {
         return list;
     }
     
-    /*public List<Supplier> getTopNSuppliers() {
-        ArrayList<Product> list = new ArrayList<>();
+    /* MEJORADO
+    public List<Supplier> getTopNSuppliers(int n) {
+        ArrayList<Supplier> list = new ArrayList<>();
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        for (Order dbObject : collection.find())
-        {
-        	for (ProductOrder aProduct: dbObject.getProducts())
-            list.add(aProduct.getProduct());
+        for (Order order : collection.aggregate(Arrays.asList( 
+        		match(eq("actualStatus.status", "Send")),
+            	group("products.product.supplier", Accumulators.sum("count",1)),
+            	sort(Sorts.descending("count")),
+            	limit(n))) ) {
+        	list.add(this.getSupplier("products.product.supplier"));
         }
         return list;
-        
-        db.getCollection('Order').aggregate([
-    {"$group" : {_id:"$client", count:{$sum:1}}},
-    {$sort:{"count":-1}}
-])
     }*/
-
+    
+    /*PRIMER INTENTO
+    public List<Supplier> getTopNSuppliers(int n) {
+        ArrayList<Supplier> list = new ArrayList<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        MongoCollection<Product> SendedOrdersProducts = this.getDb().getCollection("SendedOrdersProducts", Product.class);
+        for (Order dbObject : collection.find(eq("actualStatus.status", "send"))){
+        	for (ProductOrder aProduct: dbObject.getProducts())
+        		SendedOrdersProducts.insertOne(aProduct.getProduct());
+        }
+        for (Product product : SendedOrdersProducts.aggregate(Arrays.asList( 
+        	group("supplier", Accumulators.sum("count",1)),
+        	sort(Sorts.descending("count")),
+        	limit(n))) ) {
+        		Supplier supplier= this.getSupplier(product.getSupplier());
+        		list.add(supplier);
+        }
+        return list;
+    }*/
     //RETAZOS DE CODIGO QUE EN ALGUN MOMENTO USE
 
         /*public User getLastUserInserted(){

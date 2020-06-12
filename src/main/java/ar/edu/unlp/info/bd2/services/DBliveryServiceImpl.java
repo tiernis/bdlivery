@@ -109,9 +109,8 @@ public class DBliveryServiceImpl implements DBliveryService {
     public Order addProduct(ObjectId order, Long quantity, Product product) throws DBliveryException {
         Order theOrder=this.getRepo().getOrder(order);
         if(theOrder.getObjectId() != null) {
-        	Order modifiedOrder=theOrder.addProduct(quantity, product);
-        	this.getRepo().updateOrder(modifiedOrder);
-        	return modifiedOrder;
+        	this.getRepo().updateOrder(theOrder.addProduct(quantity, product));
+        	return theOrder;
         }else {throw new DBliveryException("The order don't exist");}
     }
 
@@ -205,8 +204,7 @@ public class DBliveryServiceImpl implements DBliveryService {
     
     @Override
     public List<Supplier> getTopNSuppliersInSentOrders(int n){
-    	//return this.getRepo().getTopNSuppliersInSentOrders(n);
-        return null;
+    	return null;//this.getRepo().getTopNSuppliers(n);
     }
 
 	@Override
@@ -241,7 +239,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
 	@Override
 	public List<Product> getSoldProductsOn(Date day) {
-		return this.getRepo().getSoldProductsOn(day);
+		return null;//this.getRepo().getSoldProductsOn(day);
 	}
 
 	@Override

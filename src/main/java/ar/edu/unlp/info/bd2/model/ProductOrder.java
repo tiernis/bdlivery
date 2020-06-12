@@ -19,5 +19,13 @@ public class ProductOrder {
 	public Product getProduct() {
 		return product;
 	}
+
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 	
 }
