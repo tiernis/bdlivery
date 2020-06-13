@@ -239,7 +239,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
 	@Override
 	public List<Product> getSoldProductsOn(Date day) {
-		return null;//this.getRepo().getSoldProductsOn(day);
+		return this.getRepo().getSoldProductsOn(day);
 	}
 
 	@Override

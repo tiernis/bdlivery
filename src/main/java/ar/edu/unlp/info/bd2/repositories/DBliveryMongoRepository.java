@@ -124,10 +124,13 @@ public class DBliveryMongoRepository {
         return collection.find(eq("cuil", cuil)).first();
     }
     
-    public Supplier getSupplier(ObjectId id){
+    /*public Supplier getSupplier(ObjectId id){
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
-        return collection.find(eq("_id", id)).first();
-    }
+        Order o = collection.find(eq("_id", id)).first();
+        System.out.println(o.getProducts().size());
+        return o;
+        //return collection.find(eq("_id", id)).first();
+    }*/
     
     public User getUserById(ObjectId objectId) {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
@@ -249,21 +252,6 @@ public class DBliveryMongoRepository {
         return list;
     }
     
-    /*
-    @SuppressWarnings("deprecation")
-	public List<Product> getSoldProductsOn(Date day) {
-        ArrayList<Product> list = new ArrayList<>();
-        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        Date endDay= day;
-        endDay.setDate(day.getDay()+1);
-        for (Order dbObject : collection.find(and(gte("status.0.dateStatus",day),lt("status.0.dateStatus", endDay)))) {
-        	for (ProductOrder aProduct: dbObject.getProducts()) {
-                list.add(aProduct.getProduct());
-    		}
-        }
-        return list;
-    }*/
-    
     public List<Order> getOrderNearPlazaMoreno() {
         ArrayList<Order> list = new ArrayList<>();
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
@@ -273,6 +261,22 @@ public class DBliveryMongoRepository {
             list.add(order);
         }
         return list;
+    }
+
+    public List<Product> getSoldProductsOn(Date day) {
+        Set<Product> products = new HashSet<>();
+        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+
+        for (Order order : collection.aggregate(Arrays.asList(
+                match(eq("status.0.dateStatus", day))
+        )))
+        {
+            for (ProductOrder prod : order.getProducts()) {
+                products.add(prod.getProduct());
+            }
+        }
+        ArrayList<Product> products_final = new ArrayList<>(products);
+        return products_final;
     }
     
     /* MEJORADO

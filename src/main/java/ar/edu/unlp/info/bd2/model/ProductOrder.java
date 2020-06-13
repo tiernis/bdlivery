@@ -12,6 +12,10 @@ public class ProductOrder {
 		this.product = product;
 	}
 
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
 	public Long getQuantity() {
 		return quantity;
 	}
@@ -22,10 +26,6 @@ public class ProductOrder {
 
 	public void setQuantity(Long quantity) {
 		this.quantity = quantity;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
 	}
 	
 }
