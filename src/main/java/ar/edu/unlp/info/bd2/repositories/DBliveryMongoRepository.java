@@ -124,24 +124,21 @@ public class DBliveryMongoRepository {
         return collection.find(eq("cuil", cuil)).first();
     }
     
-    /*public Supplier getSupplier(ObjectId id){
+    public Supplier getSupplierById(ObjectId id){
         MongoCollection<Supplier> collection = this.getDb().getCollection("Supplier", Supplier.class);
-        Order o = collection.find(eq("_id", id)).first();
-        System.out.println(o.getProducts().size());
-        return o;
-        //return collection.find(eq("_id", id)).first();
-    }*/
-    
+        return collection.find(eq("_id", id)).first();
+    }
+
     public User getUserById(ObjectId objectId) {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
         return collection.find(eq("_id", objectId)).first();
     }
-    
+
     public User getUserByEmail(String email) {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
         return collection.find(eq("email", email)).first();
     }
-    
+
     public User getUserByUsername(String username) {
         MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
         return collection.find(eq("username", username)).first();
@@ -156,13 +153,13 @@ public class DBliveryMongoRepository {
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
         collection.insertOne(order);
     }
-    
+
     public Order getOrder(ObjectId id){
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
         Order o= collection.find(eq("_id", id)).first();
         return o;
     }
-    
+
     public void updateOrder(Order order){
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
         collection.replaceOne(eq("_id", order.getObjectId()), order);
@@ -240,9 +237,9 @@ public class DBliveryMongoRepository {
         }
         return list;
     }
-    
+
     public List<Product> getProductsOnePrice(){
-    	ArrayList<Product> list = new ArrayList<>();
+        ArrayList<Product> list = new ArrayList<>();
         MongoCollection<Product> collection = this.getDb().getCollection("Product", Product.class);
 
         for (Product dbObject : collection.find(size("allPrices",1)))
@@ -251,13 +248,13 @@ public class DBliveryMongoRepository {
         }
         return list;
     }
-    
+
     public List<Order> getOrderNearPlazaMoreno() {
         ArrayList<Order> list = new ArrayList<>();
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
         Point refPoint = new Point(new Position(-34.921236,-57.954571));
-        for (Order order : collection.find(Filters.near("position", refPoint, 400.0, 0.0))) 
-        	{
+        for (Order order : collection.find(Filters.near("position", refPoint, 400.0, 0.0)))
+        {
             list.add(order);
         }
         return list;
@@ -278,20 +275,44 @@ public class DBliveryMongoRepository {
         ArrayList<Product> products_final = new ArrayList<>(products);
         return products_final;
     }
-    
-    /* MEJORADO
+
+    public Product getBestSellingProduct() {
+        MongoCollection<Document> collection = this.getDb().getCollection("Order", Document.class);
+        return this.getProduct(new ObjectId(collection.aggregate(Arrays.asList(
+                unwind("$products"),
+                group(
+                        new Document().append("product_id", "$products.product._id"), Accumulators.sum("count", 1)
+                ),
+                sort(Sorts.descending("count"))
+        )).first().get("_id").toString().substring(21,45)));
+    }
+
+    public Product getProductById(ObjectId id){
+        MongoCollection<Product> collection = this.getDb().getCollection("User", Product.class);
+        return collection.find(eq("_id", id)).first();
+    }
+
     public List<Supplier> getTopNSuppliers(int n) {
         ArrayList<Supplier> list = new ArrayList<>();
-        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        for (Order order : collection.aggregate(Arrays.asList( 
-        		match(eq("actualStatus.status", "Send")),
-            	group("products.product.supplier", Accumulators.sum("count",1)),
-            	sort(Sorts.descending("count")),
-            	limit(n))) ) {
-        	list.add(this.getSupplier("products.product.supplier"));
+        MongoCollection<Document> collection = this.getDb().getCollection("Order", Document.class);
+        for (Document docu : collection.aggregate(Arrays.asList(
+                match(
+                        eq("actualStatus.status", "Send")
+                ),
+                unwind("$products"),
+                group(
+                        new Document().append("supplier_id", "$products.product.supplier"), Accumulators.sum("count", 1)
+                ),
+                sort(
+                        Sorts.descending("count")
+                ),
+                limit(n)
+                )
+        )) {
+        	list.add(this.getSupplierById(new ObjectId(docu.get("_id").toString().substring(22,46))));
         }
         return list;
-    }*/
+    }
     
     /*PRIMER INTENTO
     public List<Supplier> getTopNSuppliers(int n) {

@@ -204,7 +204,7 @@ public class DBliveryServiceImpl implements DBliveryService {
     
     @Override
     public List<Supplier> getTopNSuppliersInSentOrders(int n){
-    	return null;//this.getRepo().getTopNSuppliers(n);
+    	return this.getRepo().getTopNSuppliers(n);
     }
 
 	@Override
@@ -229,7 +229,7 @@ public class DBliveryServiceImpl implements DBliveryService {
 
 	@Override
 	public Product getBestSellingProduct() {
-		return null;
+		return this.getRepo().getBestSellingProduct();
 	}
 
 	@Override
