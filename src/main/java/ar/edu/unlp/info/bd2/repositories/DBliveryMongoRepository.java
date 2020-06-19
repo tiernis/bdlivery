@@ -180,17 +180,6 @@ public class DBliveryMongoRepository {
         return collection.find().sort(new Document("weight",-1)).first();
     }
 
-    /*public List<Supplier> getTopNSuppliersInSentOrders(int n) {
-        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        for (Order order : collection.aggregate(Arrays.asList(
-            match(eq("actualStatus.status", "Send")),
-                group("$supplier")
-        ))) {
-            final_user = user;
-        }
-        return null;
-    }*/
-
     public List<Order> getPendingOrders() {
         ArrayList<Order> list = new ArrayList<>();
         MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
@@ -277,7 +266,22 @@ public class DBliveryMongoRepository {
     }
 
     public Product getBestSellingProduct() {
+    	//ArrayList<Product> list = new ArrayList<>();
         MongoCollection<Document> collection = this.getDb().getCollection("Order", Document.class);
+        /*for (Product docu : collection.aggregate(Arrays.asList(
+                unwind("$products"),
+                group(
+                        new Document().append("_id", "$products.product"), Accumulators.sum("count", 1)
+                ),
+                sort(
+                        Sorts.descending("count")
+                ),
+                replaceRoot("$_id")
+                )
+        )) {
+        	list.add(docu);
+        }
+        return list.get(0);*/
         return this.getProduct(new ObjectId(collection.aggregate(Arrays.asList(
                 unwind("$products"),
                 group(
@@ -306,7 +310,9 @@ public class DBliveryMongoRepository {
                 sort(
                         Sorts.descending("count")
                 ),
+                //lookup("Supplier", "_id", "_id","ordersSuppliers"),
                 limit(n)
+                //replaceRoot(Document.parse("{ $mergeObjects: [ { $arrayElemAt: [ '$ordersSuppliers', 0 ] } ] }"))
                 )
         )) {
         	list.add(this.getSupplierById(new ObjectId(docu.get("_id").toString().substring(22,46))));
@@ -314,93 +320,32 @@ public class DBliveryMongoRepository {
         return list;
     }
     
-    /*PRIMER INTENTO
-    public List<Supplier> getTopNSuppliers(int n) {
-        ArrayList<Supplier> list = new ArrayList<>();
-        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
-        MongoCollection<Product> SendedOrdersProducts = this.getDb().getCollection("SendedOrdersProducts", Product.class);
-        for (Order dbObject : collection.find(eq("actualStatus.status", "send"))){
-        	for (ProductOrder aProduct: dbObject.getProducts())
-        		SendedOrdersProducts.insertOne(aProduct.getProduct());
-        }
-        for (Product product : SendedOrdersProducts.aggregate(Arrays.asList( 
-        	group("supplier", Accumulators.sum("count",1)),
-        	sort(Sorts.descending("count")),
-        	limit(n))) ) {
-        		Supplier supplier= this.getSupplier(product.getSupplier());
-        		list.add(supplier);
-        }
-        return list;
-    }*/
-    //RETAZOS DE CODIGO QUE EN ALGUN MOMENTO USE
-
-        /*public User getLastUserInserted(){
-        MongoCollection<User> collection = this.getDb().getCollection("User", User.class);
-        Block<User> printBlock = new Block<User>() {
-            @Override
-            public void apply(final User user) {
-                System.out.println(user);
-            }
-        };
-
-        User final_user = null;
-
-        for (User user : collection.find().sort(new Document("_id", -1)).limit(1)) {
-            final_user = user;
-        }
-
-        return final_user;
-    }*/
+/*CONSULTAS
+  db.getCollection('Order').aggregate([
+    {$match: {"actualStatus.status": "Send"}},
+    {$unwind:"$products"},
+    {$group:{_id:"$products.product.supplier", count:{$sum:1}}},
+    {$sort:{"count":-1}},
+    {$lookup: {
+         from: "Supplier",
+         localField: "_id",    // field in the orders collection
+         foreignField: "_id",  // field in the items collection
+         as: "fromItems"
+      }},
+    {$limit:4},
+   { $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromItems", 0 ] } ] } } }
+])
 
 
-            /*AggregateIterable<Product> product = collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("_id", id))));
-        for (Product dbObject : product)
-        {
-            System.out.println(dbObject.getAllPrices().get(0).getPrice());
-        }
-        return new Product();
-
-            //MÉTODOS QUE NO ENTIENDO
-
-    public void saveAssociation(PersistentObject source, PersistentObject destination, String associationName) {
-        Association association = new Association(source.getObjectId(), destination.getObjectId());
-        this.getDb()
-                .getCollection(associationName, Association.class)
-                .insertOne(association);
-    }
-
-            public <T extends PersistentObject> List<T> getAssociatedObjects(
-            PersistentObject source, Class<T> objectClass, String association, String destCollection) {
-        AggregateIterable<T> iterable =
-                this.getDb()
-                        .getCollection(association, objectClass)
-                        .aggregate(
-                                Arrays.asList(
-                                        match(eq("source", source.getObjectId())),
-                                        lookup(destCollection, "destination", "_id", "_matches"),
-                                        unwind("$_matches"),
-                                        replaceRoot("$_matches")));
-        Stream<T> stream =
-                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
-        return stream.collect(Collectors.toList());
-    }
-
-    public <T extends PersistentObject> List<T> getObjectsAssociatedWith(
-            ObjectId objectId, Class<T> objectClass, String association, String destCollection) {
-        AggregateIterable<T> iterable =
-                this.getDb()
-                        .getCollection(association, objectClass)
-                        .aggregate(
-                                Arrays.asList(
-                                        match(eq("destination", objectId)),
-                                        lookup(destCollection, "source", "_id", "_matches"),
-                                        unwind("$_matches"),
-                                        replaceRoot("$_matches")));
-        Stream<T> stream =
-                StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterable.iterator(), 0), false);
-        return stream.collect(Collectors.toList());
-    }
-        */
 
 
+db.getCollection('Order').aggregate([
+    {$unwind:"$products"},
+    {$group:{_id:"$products.product", count:{$sum:1}}},
+    {$sort:{"count":-1}},
+    {$limit:4},
+   { $replaceRoot: { newRoot: "$_id"} }
+])
+ */
+    
 }
