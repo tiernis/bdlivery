@@ -1,85 +1,105 @@
 package ar.edu.unlp.info.bd2.model;
 
-import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Product")
 public class Product {
-	
-	@BsonId
-    private ObjectId objectId;
-    private String name;
-    private Float weight;
-    private ObjectId supplier;
-    private List<Price> allPrices = new ArrayList<>();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
+	private Long id;
+	@Column(name ="name_product")
+	private String name;
+	@Column(name ="weight")
+	private Float weight;
+	@OneToOne
+	private Supplier supplier;
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private List<Price> allPrices = new ArrayList<>();
 
-    public Product(){
-
+	public Product(){
 	}
 
-    public Product(String name, Float weight, ObjectId supplier) {
+	public Product(String name, Float price, Float weight, Supplier supplier)
+	{
 		this.setName(name);
+		this.updateProductPrice(price, new Date());
 		this.setWeight(weight);
 		this.setSupplier(supplier);
 	}
 
-	public ObjectId getObjectId() {
-        return objectId;
-    }
-	
-    public void setObjectId(ObjectId objectId) {
-        this.objectId = objectId;
-    }
-
-    public Float getWeight() {
-		return weight;
+	public Product(String name, Float price, Float weight, Supplier supplier, Date date)
+	{
+		this.setName(name);
+		this.updateProductPrice(price, date);
+		this.setWeight(weight);
+		this.setSupplier(supplier);
 	}
 
-	public void setWeight(Float weight) {
-		this.weight = weight;
+	public Product getMe(){
+		return this;
 	}
 
-	public ObjectId getSupplier() {
-		return supplier;
+	public Long getId() {
+		return this.id;
 	}
 
-	public void setSupplier(ObjectId supplier) {
-		this.supplier = supplier;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setAllPrices(List<Price> prices){
-    	this.allPrices = prices;
+	public Float getWeight() {
+		return this.weight;
 	}
 
-	public List<Price> getAllPrices() {
-		return allPrices;
+	public void setWeight(Float weight) {
+		this.weight = weight;
 	}
 
-	@BsonIgnore
-	public List<Price> getPrices() {
-        return allPrices;
-    }
+	public Supplier getSupplier() {
+		return this.supplier;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
+	}
 
-    public Float getPrice() {
-        return this.getPrices().get(this.getPrices().size() - 1).getPrice();
-    }
+	public List<Price> getPrices(){
+		return this.allPrices;
+	}
 
-	public Product updateProductPrice(Float price, Date startDate){
-		Price newPrice = new Price(price, startDate);
-		this.getPrices().add(newPrice);
+	public Float getPrice() {
+		return this.getPrices().get(this.getPrices().size() - 1).getPrice();
+	}
+
+	public Date getStartDate() {
+		return this.getPrices().get(this.getPrices().size() - 1).getStartDate();
+	}
+
+	public Product updateProductPrice(Float price, Date date) {
+		Price new_price = new Price(price, date, this.getMe());
+		this.getPrices().add(new_price);
 		return this;
+	}
+
+	public Float getPriceAt(Date day) {
+		Float pricesAt=0F;
+		for (int i = 0; i< this.getPrices().size(); i++) {
+			if(this.getPrices().get(i).getStartDate().before(day)) {
+				pricesAt=this.getPrices().get(i).getPrice();
+			}
+		}
+		return pricesAt;
 	}
 }

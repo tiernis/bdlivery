@@ -1,58 +1,67 @@
 package ar.edu.unlp.info.bd2.model;
 
-import org.bson.types.ObjectId;
-
+import java.util.*;
 import ar.edu.unlp.info.bd2.repositories.DBliveryException;
+import javax.persistence.*;
 
-import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-
-import com.mongodb.client.model.geojson.Point;
-import com.mongodb.client.model.geojson.Position;
-
+@Entity
+@Table(name = "Orden")
 public class Order {
-	@BsonId
-	private ObjectId objectId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique=true, nullable = false)
+	private Long id;
+	@Column(name ="address_order")
 	private String address;
-	private Point position;
+	@Column(name ="coordx_order")
 	private Float coordX;
+	@Column(name ="coordy_order")
 	private Float coordY;
+	@OneToOne
 	private User client;
-	private User deliveryUser;
+	@OneToOne
+	private User delivery;
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderStatus> status = new ArrayList<>();
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<ProductOrder> products = new ArrayList<>();
+	@Column(name ="cost")
 	private Float cost;
-	
+
 	public Order(){
-	
+
 	}
-	
+
 	public Order(Date dateOfOrder, String address, Float coordX, Float coordY, User client) {
 		this.setAddress(address);
-		Position pos = new Position(coordX,coordY);
-		this.position = new Point(pos);
 		this.setCoordX(coordX);
 		this.setCoordY(coordY);
 		this.setClient(client);
-		OrderStatus newStatus= new OrderStatus("Pending", dateOfOrder);
-		status.add(newStatus);
-		this.setCost(0F);
-	}
-	
-	public Point getPosition() {
-		return position;
-	}
-	
-	public void setPosition(Point position) {
-		this.position= position;
+		this.addOrderStatus("Pending", dateOfOrder);
+		this.cost=0F;
 	}
 
-    public String getAddress() {
+	public Order getMe(){
+		return this;
+	}
+
+	public Float getCost() {
+		return this.cost;
+	}
+
+	public void setCost(Float cost) {
+		this.cost =cost;
+	}
+
+	public Long getId() {
+		return this.id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getAddress() {
 		return address;
 	}
 
@@ -76,131 +85,83 @@ public class Order {
 		this.coordY = coordY;
 	}
 
+	public List<OrderStatus> getStatus(){
+		return this.status;
+	}
+
 	public User getClient() {
-		return client;
+		return this.client;
 	}
 
 	public void setClient(User client) {
 		this.client = client;
 	}
-	
+
 	public User getDeliveryUser() {
-		return deliveryUser;
+		return this.delivery;
 	}
 
-	public void setDeliveryUser(User delivery) {
-		this.deliveryUser = delivery;
-	}
-
-	public List<OrderStatus> getStatus() {
-		return status;
+	public void setDelivery(User delivery) {
+		this.delivery = delivery;
 	}
 
 	public List<ProductOrder> getProducts() {
-		return products;
+		return this.products;
 	}
 
-	public Float getCost() {
-		return cost;
-	}
-
-	public void setCost(Float cost) {
-		this.cost = cost;
-	}
-
-	public ObjectId getObjectId() {
-		return objectId;
-	}  
-	
-	public void setObjectId(ObjectId objectId) {
-		this.objectId = objectId;
-	}
-
-	public void setStatus(List<OrderStatus> status) {
-		this.status = status;
-	}
-
-	public void setProducts(List<ProductOrder> products) {
-		this.products = products;
-	}
-
-	public Order addProduct(Long quantity, Product product) {
-		ProductOrder newProduct= new ProductOrder(quantity,product);
-		this.products.add(newProduct);
-		Float newProdCost= this.getCost()+(product.getPrice()*quantity);
-		this.setCost(newProdCost);
+	public Order addProduct (Long quantity, Product product) {
+		ProductOrder newProduct = new ProductOrder(quantity, product, this.getMe());
+		this.getProducts().add(newProduct);
+		Float newProductCost=product.getPriceAt(this.getStatus().get(0).getDateStatus()) * quantity;
+		this.setCost(this.getCost() + newProductCost);
 		return this;
 	}
-	
-	//@BsonIgnore
-	public OrderStatus getActualStatus() {
-		return this.getStatus().get(this.getStatus().size()-1);
+
+	public Order addOrderStatus(String status, Date date){
+		OrderStatus orderStatus = new OrderStatus(status, this.getMe(), date);
+		this.getStatus().add(orderStatus);
+		return this;
 	}
-    
+
 	public Boolean canCancel() {
 		return (this.getActualStatus().getStatus().equals("Pending"));
 	}
-	
-	public Order cancel() throws DBliveryException {
-		if(this.canCancel()) {
-			OrderStatus newStatus = new OrderStatus("Cancelled", new Date());
-			this.getStatus().add(newStatus);
-			return this;
-		}else { throw new DBliveryException("The order can't be canceled");}
-	}
-	
-	public Order cancel(Date date) throws DBliveryException {
-		if(this.canCancel()) {
-			OrderStatus newStatus = new OrderStatus("Cancelled", date);
-			this.getStatus().add(newStatus);
-			return this;
-		}else { throw new DBliveryException("The order can't be canceled");}
+
+	public Boolean canFinish() {
+		return (this.getActualStatus().getStatus().equals("Send"));
 	}
 
 	public Boolean canDeliver() {
 		return ((this.getActualStatus().getStatus().equals("Pending")) && (this.getProducts().size() != 0));
 	}
-	
-	public Order deliver(User deliveryUser, Date date) throws DBliveryException {
+
+	public Order deliverOrder(User deliveryUser, Date date) throws DBliveryException {
 		if(this.canDeliver()) {
-			this.setDeliveryUser(deliveryUser);
-			OrderStatus newStatus= new OrderStatus("Send", date);
-			this.getStatus().add(newStatus);
+			this.setDelivery(deliveryUser);
+			this.addOrderStatus("Send", date);
 			return this;
 		}else { throw new DBliveryException("The order can't be delivered");}
 	}
-	
-	public Order deliver(User deliveryUser) throws DBliveryException {
-		if(this.canDeliver()) {
-			this.setDeliveryUser(deliveryUser);
-			OrderStatus newStatus= new OrderStatus("Send", new Date());
-			this.getStatus().add(newStatus);
+
+	public Order cancelOrder(Date date) throws DBliveryException {
+		if(this.canCancel()) {
+			this.addOrderStatus("Cancelled", date);
 			return this;
-		}else { throw new DBliveryException("The order can't be delivered");}
+		}else { throw new DBliveryException("The order can't be canceled");}
 	}
-	
-	public Boolean canFinish() {
-		return (this.getActualStatus().getStatus().equals("Send"));
-	}
-	
-	public Order finish(Date date) throws DBliveryException {
+
+	public Order finishOrder(Date date) throws DBliveryException {
 		if(this.canFinish()) {
-			OrderStatus newStatus= new OrderStatus("Delivered", date);
-			this.getStatus().add(newStatus);
+			this.addOrderStatus("Delivered", date);
 			return this;
 		}else { throw new DBliveryException("The order can't be finished");}
 	}
-	
-	public Order finish() throws DBliveryException {
-		if(this.canFinish()) {
-			OrderStatus newStatus= new OrderStatus("Delivered", new Date());
-			this.getStatus().add(newStatus);
-			return this;
-		}else { throw new DBliveryException("The order can't be finished");}
+
+	public OrderStatus getActualStatus(){
+		return this.getStatus().get(this.getStatus().size() - 1);
 	}
-	
-	@BsonIgnore	
+
 	public Float getAmount() {
-		return this.cost;
+		return this.getCost();
 	}
 }
