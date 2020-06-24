@@ -1,6 +1,7 @@
 package ar.edu.unlp.info.bd2.config;
 
 
+import ar.edu.unlp.info.bd2.repositories.UserRepository;
 import ar.edu.unlp.info.bd2.services.DBliveryService;
 import ar.edu.unlp.info.bd2.services.SpringDataDBliveryService;
 import ar.edu.unlp.info.bd2.utils.DBInitializer;
@@ -71,7 +72,7 @@ public class SpringDataConfiguration {
     private final Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
 
-        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
+        //hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
         hibernateProperties.setProperty(
                 "hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         hibernateProperties.setProperty("hibernate.show_sql", "true");
