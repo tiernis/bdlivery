@@ -3,6 +3,8 @@ package ar.edu.unlp.info.bd2.repositories;
 import static com.mongodb.client.model.Accumulators.first;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Projections.include;
 
 import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.mongo.*;
@@ -266,22 +268,15 @@ public class DBliveryMongoRepository {
     }
 
     public Product getBestSellingProduct() {
-    	//ArrayList<Product> list = new ArrayList<>();
         MongoCollection<Document> collection = this.getDb().getCollection("Order", Document.class);
-        /*for (Product docu : collection.aggregate(Arrays.asList(
+        /*Object doc = collection.aggregate(Arrays.asList(
                 unwind("$products"),
                 group(
-                        new Document().append("_id", "$products.product"), Accumulators.sum("count", 1)
+                        "$products.product._id", Accumulators.sum("count", 1)
                 ),
-                sort(
-                        Sorts.descending("count")
-                ),
-                replaceRoot("$_id")
-                )
-        )) {
-        	list.add(docu);
-        }
-        return list.get(0);*/
+                sort(Sorts.descending("count")),
+                lookup("Product", "_id", "_id", "result")
+        )).first();*/
         return this.getProduct(new ObjectId(collection.aggregate(Arrays.asList(
                 unwind("$products"),
                 group(
