@@ -17,7 +17,7 @@ public class Product {
 	private Float weight;
 	@OneToOne
 	private Supplier supplier;
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
 	private List<Price> allPrices = new ArrayList<>();
 
 	public Product(){
@@ -77,6 +77,14 @@ public class Product {
 
 	public List<Price> getPrices(){
 		return this.allPrices;
+	}
+
+	public List<Price> getAllPrices() {
+		return allPrices;
+	}
+
+	public void setAllPrices(List<Price> allPrices) {
+		this.allPrices = allPrices;
 	}
 
 	public Float getPrice() {

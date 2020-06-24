@@ -227,4 +227,44 @@ public class SpringDataDBliveryService implements DBliveryService {
     public List<Product> getProductsByName(String name) {
         return prodRepo.findByNameContaining(name);
     }
+
+	@Override
+	public Product getMaxWeigth() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getAllOrdersMadeByUser(String username) {
+		return null;
+	}
+
+	@Override
+	public List<Order> getPendingOrders() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getSentOrders() {
+		return null;
+	}
+
+	@Override
+	public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
+		return null;
+	}
+
+	@Override
+	public List<Order> getDeliveredOrdersForUser(String username) {
+		return null;
+	}
+
+	@Override
+	public List<Product> getProductsOnePrice() {
+		return null;
+	}
+
+	@Override
+	public List<Product> getSoldProductsOn(Date day) {
+		return null;
+	}
 }

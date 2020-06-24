@@ -4,6 +4,8 @@ import java.util.*;
 import ar.edu.unlp.info.bd2.repositories.DBliveryException;
 import javax.persistence.*;
 
+import org.hibernate.annotations.IndexColumn;
+
 @Entity
 @Table(name = "Orden")
 public class Order {
@@ -21,9 +23,10 @@ public class Order {
 	private User client;
 	@OneToOne
 	private User delivery;
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+	@IndexColumn(name="INDEX_COL")
 	private List<OrderStatus> status = new ArrayList<>();
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
 	private List<ProductOrder> products = new ArrayList<>();
 	@Column(name ="cost")
 	private Float cost;
