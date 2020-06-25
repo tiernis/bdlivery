@@ -42,7 +42,7 @@ public class SpringDataConfiguration {
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/bd2_grupo" + this.getGroupNumber()+"?useSSL=false");
         dataSource.setUsername("root");
-        dataSource.setPassword("123456");
+        dataSource.setPassword("");
 
         return dataSource;
     }
@@ -72,7 +72,7 @@ public class SpringDataConfiguration {
     private final Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
 
-        //hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
+        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
         hibernateProperties.setProperty(
                 "hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         hibernateProperties.setProperty("hibernate.show_sql", "true");

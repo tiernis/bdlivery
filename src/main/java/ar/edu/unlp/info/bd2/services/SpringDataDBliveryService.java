@@ -4,6 +4,7 @@ import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -230,22 +231,36 @@ public class SpringDataDBliveryService implements DBliveryService {
 
 	@Override
 	public Product getMaxWeigth() {
-		return null;
+		//Float maxWeight = prodRepo.findMaxWeight();
+		return this.prodRepo.findProductWithMaxWeight(); //prodRepo.findByWeight(maxWeight);
 	}
 
 	@Override
 	public List<Order> getAllOrdersMadeByUser(String username) {
-		return null;
+		Optional<User> usr = this.getUserByUsername(username);
+		return ordRepo.findByClient(usr.get());
 	}
 
 	@Override
 	public List<Order> getPendingOrders() {
-		return null;
+		List<Order> list = new ArrayList<Order>();
+		for(Order ord : this.ordRepo.findAll()) {
+			if(ord.getActualStatus().getStatus().equals("Pending")) {
+				list.add(ord);
+			}
+		}
+		return list;
 	}
 
 	@Override
 	public List<Order> getSentOrders() {
-		return null;
+		List<Order> list = new ArrayList<Order>();
+		for(Order ord : this.ordRepo.findAll()) {
+			if(ord.getActualStatus().getStatus().equals("Send")) {
+				list.add(ord);
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -255,7 +270,14 @@ public class SpringDataDBliveryService implements DBliveryService {
 
 	@Override
 	public List<Order> getDeliveredOrdersForUser(String username) {
-		return null;
+		List<Order> usrOrders = this.getAllOrdersMadeByUser(username);
+		List<Order> ordList = new ArrayList<Order>();
+		for(Order ord : usrOrders) {
+			if(ord.getActualStatus().getStatus().equals("Delivered")) {
+				ordList.add(ord);
+			}
+		}
+		return ordList;
 	}
 
 	@Override
