@@ -22,6 +22,9 @@ public class SpringDataDBliveryService implements DBliveryService {
 
     @Autowired
     OrderRepository ordRepo;
+    
+    @Autowired
+    OrderStatusRepository ordStaRepo;
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
@@ -265,7 +268,13 @@ public class SpringDataDBliveryService implements DBliveryService {
 
 	@Override
 	public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
-		return null;
+		List<Order> list = new ArrayList<Order>();
+		for(OrderStatus os: ordStaRepo.findByStatus("Delivered")){
+			if(os.getDateStatus().after(startDate) && os.getDateStatus().before(endDate)){
+				list.add(os.getOrder());
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -282,11 +291,24 @@ public class SpringDataDBliveryService implements DBliveryService {
 
 	@Override
 	public List<Product> getProductsOnePrice() {
-		return null;
+		List<Product> list = new ArrayList<Product>();
+		for(Product p: prodRepo.findAll()){
+			if(p.getAllPrices().size() == 1) {
+				list.add(p);
+			}
+		}
+		return list;
 	}
 
 	@Override
 	public List<Product> getSoldProductsOn(Date day) {
-		return null;
+		List<Product> list= new ArrayList<Product>();
+		for(OrderStatus os: ordStaRepo.findByDateStatus(day)) {
+			Order o = os.getOrder();
+			for(ProductOrder po: o.getProducts()) {
+				list.add(po.getProduct());
+			}
+		}
+		return list;
 	}
 }
