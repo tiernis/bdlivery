@@ -306,7 +306,8 @@ public class SpringDataDBliveryService implements DBliveryService {
 		for(OrderStatus os: ordStaRepo.findByDateStatus(day)) {
 			Order o = os.getOrder();
 			for(ProductOrder po: o.getProducts()) {
-				list.add(po.getProduct());
+                if (!list.contains(po.getProduct()))
+                    list.add(po.getProduct());
 			}
 		}
 		return list;
