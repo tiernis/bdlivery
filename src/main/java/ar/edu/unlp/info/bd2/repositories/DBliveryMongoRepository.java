@@ -268,22 +268,17 @@ public class DBliveryMongoRepository {
     }
 
     public Product getBestSellingProduct() {
-        MongoCollection<Document> collection = this.getDb().getCollection("Order", Document.class);
-        /*Object doc = collection.aggregate(Arrays.asList(
+        MongoCollection<Product> collection = this.getDb().getCollection("Order", Product.class);
+        return collection.aggregate(Arrays.asList(
                 unwind("$products"),
                 group(
                         "$products.product._id", Accumulators.sum("count", 1)
                 ),
                 sort(Sorts.descending("count")),
-                lookup("Product", "_id", "_id", "result")
-        )).first();*/
-        return this.getProduct(new ObjectId(collection.aggregate(Arrays.asList(
-                unwind("$products"),
-                group(
-                        new Document().append("product_id", "$products.product._id"), Accumulators.sum("count", 1)
-                ),
-                sort(Sorts.descending("count"))
-        )).first().get("_id").toString().substring(21,45)));
+                lookup("Product", "_id", "_id", "result"),
+                unwind("$result"),
+                replaceRoot("$result")
+        )).first();
     }
 
     public Product getProductById(ObjectId id){
@@ -310,7 +305,7 @@ public class DBliveryMongoRepository {
                 //replaceRoot(Document.parse("{ $mergeObjects: [ { $arrayElemAt: [ '$ordersSuppliers', 0 ] } ] }"))
                 )
         )) {
-        	list.add(this.getSupplierById(new ObjectId(docu.get("_id").toString().substring(22,46))));
+            list.add(this.getSupplierById(new ObjectId(docu.get("_id").toString().substring(22,46))));
         }
         return list;
     }
