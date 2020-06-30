@@ -288,54 +288,23 @@ public class DBliveryMongoRepository {
 
     public List<Supplier> getTopNSuppliers(int n) {
         ArrayList<Supplier> list = new ArrayList<>();
-        MongoCollection<Document> collection = this.getDb().getCollection("Order", Document.class);
-        for (Document docu : collection.aggregate(Arrays.asList(
+        MongoCollection<Supplier> collection = this.getDb().getCollection("Order", Supplier.class);
+        for (Supplier docu : collection.aggregate(Arrays.asList(
                 match(
                         eq("actualStatus.status", "Send")
                 ),
                 unwind("$products"),
-                group(
-                        new Document().append("supplier_id", "$products.product.supplier"), Accumulators.sum("count", 1)
-                ),
-                sort(
-                        Sorts.descending("count")
-                ),
-                //lookup("Supplier", "_id", "_id","ordersSuppliers"),
+                group("$products.product.supplier" , Accumulators.sum("count", 1)   ),
+                sort( Sorts.descending("count")),
+                lookup("Supplier", "_id", "_id","result"),
+                unwind("$result"),
+                replaceRoot("$result"),
                 limit(n)
-                //replaceRoot(Document.parse("{ $mergeObjects: [ { $arrayElemAt: [ '$ordersSuppliers', 0 ] } ] }"))
                 )
         )) {
-            list.add(this.getSupplierById(new ObjectId(docu.get("_id").toString().substring(22,46))));
+        	list.add(docu);
         }
         return list;
     }
-    
-/*CONSULTAS
-  db.getCollection('Order').aggregate([
-    {$match: {"actualStatus.status": "Send"}},
-    {$unwind:"$products"},
-    {$group:{_id:"$products.product.supplier", count:{$sum:1}}},
-    {$sort:{"count":-1}},
-    {$lookup: {
-         from: "Supplier",
-         localField: "_id",    // field in the orders collection
-         foreignField: "_id",  // field in the items collection
-         as: "fromItems"
-      }},
-    {$limit:4},
-   { $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$fromItems", 0 ] } ] } } }
-])
-
-
-
-
-db.getCollection('Order').aggregate([
-    {$unwind:"$products"},
-    {$group:{_id:"$products.product", count:{$sum:1}}},
-    {$sort:{"count":-1}},
-    {$limit:4},
-   { $replaceRoot: { newRoot: "$_id"} }
-])
- */
-    
+   
 }
