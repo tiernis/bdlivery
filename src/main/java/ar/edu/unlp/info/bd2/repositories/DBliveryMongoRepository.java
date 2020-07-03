@@ -253,18 +253,21 @@ public class DBliveryMongoRepository {
 
     public List<Product> getSoldProductsOn(Date day) {
         Set<Product> products = new HashSet<>();
-        MongoCollection<Order> collection = this.getDb().getCollection("Order", Order.class);
+        MongoCollection<Product> collection = this.getDb().getCollection("Order", Product.class);
 
-        for (Order order : collection.aggregate(Arrays.asList(
-                match(eq("status.0.dateStatus", day))
+        for (Product prod : collection.aggregate(Arrays.asList(
+                match(eq("status.0.dateStatus", day)),
+                group(
+                        "$products.product._id"
+                ),
+                lookup("Product", "_id", "_id", "result"),
+                unwind("$result"),
+                replaceRoot("$result")
         )))
         {
-            for (ProductOrder prod : order.getProducts()) {
-                products.add(prod.getProduct());
-            }
+            products.add(prod);
         }
-        ArrayList<Product> products_final = new ArrayList<>(products);
-        return products_final;
+        return new ArrayList<>(products);
     }
 
     public Product getBestSellingProduct() {
