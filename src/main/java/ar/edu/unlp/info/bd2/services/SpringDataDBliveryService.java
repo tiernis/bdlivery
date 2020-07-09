@@ -57,7 +57,7 @@ public class SpringDataDBliveryService implements DBliveryService {
             return prodRepo.save(prod.get().updateProductPrice(price, startDate));
         }
         catch (NullPointerException npe){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The product don't exist");
         }
     }
 
@@ -94,7 +94,7 @@ public class SpringDataDBliveryService implements DBliveryService {
             return ordRepo.save(ord.get().addProduct(quantity, product));
         }
         catch (NullPointerException npe){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -105,11 +105,11 @@ public class SpringDataDBliveryService implements DBliveryService {
             if (this.canDeliver(ord.get().getId())){
                 return ordRepo.save(ord.get().deliverOrder(deliveryUser, new Date()));
             } else {
-                throw new DBliveryException("Se fue todo a la puta");
+                throw new DBliveryException("The order can't be delivered");
             }
         }
         catch (NullPointerException | DBliveryException e){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -120,11 +120,11 @@ public class SpringDataDBliveryService implements DBliveryService {
             if (this.canDeliver(ord.get().getId())){
                 return ordRepo.save(ord.get().deliverOrder(deliveryUser, date));
             } else {
-                throw new DBliveryException("Se fue todo a la puta");
+                throw new DBliveryException("The order can't be delivered");
             }
         }
         catch (NullPointerException | DBliveryException e){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -135,11 +135,11 @@ public class SpringDataDBliveryService implements DBliveryService {
             if (this.canCancel(ord.get().getId())){
                 return ordRepo.save(ord.get().cancelOrder(new Date()));
             } else {
-                throw new DBliveryException("Se fue todo a la puta");
+                throw new DBliveryException("The order can't be canceled");
             }
         }
         catch (NullPointerException | DBliveryException e){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -150,11 +150,11 @@ public class SpringDataDBliveryService implements DBliveryService {
             if (this.canCancel(ord.get().getId())){
                 return ordRepo.save(ord.get().cancelOrder(date));
             } else {
-                throw new DBliveryException("Se fue todo a la puta");
+                throw new DBliveryException("The order can't be canceled");
             }
         }
         catch (NullPointerException | DBliveryException e){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -165,11 +165,11 @@ public class SpringDataDBliveryService implements DBliveryService {
             if (this.canFinish(ord.get().getId())){
                 return ordRepo.save(ord.get().finishOrder(new Date()));
             } else {
-                throw new DBliveryException("Se fue todo a la puta");
+                throw new DBliveryException("The order can't be finished");
             }
         }
         catch (NullPointerException | DBliveryException e){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -180,11 +180,11 @@ public class SpringDataDBliveryService implements DBliveryService {
             if (this.canFinish(ord.get().getId())){
                 return ordRepo.save(ord.get().finishOrder(date));
             } else {
-                throw new DBliveryException("Se fue todo a la puta");
+                throw new DBliveryException("The order can't be finished");
             }
         }
         catch (NullPointerException | DBliveryException e){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -195,7 +195,7 @@ public class SpringDataDBliveryService implements DBliveryService {
             return ord.get().canCancel();
         }
         catch (NullPointerException npe){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -206,7 +206,7 @@ public class SpringDataDBliveryService implements DBliveryService {
             return ord.get().canFinish();
         }
         catch (NullPointerException npe){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -217,7 +217,7 @@ public class SpringDataDBliveryService implements DBliveryService {
             return ord.get().canDeliver();
         }
         catch (NullPointerException npe){
-            throw new DBliveryException("Se fue todo a la puta");
+            throw new DBliveryException("The order don't exist");
         }
     }
 
@@ -246,70 +246,32 @@ public class SpringDataDBliveryService implements DBliveryService {
 
 	@Override
 	public List<Order> getPendingOrders() {
-		List<Order> list = new ArrayList<Order>();
-		for(Order ord : this.ordRepo.findAll()) {
-			if(ord.getActualStatus().getStatus().equals("Pending")) {
-				list.add(ord);
-			}
-		}
-		return list;
+		return this.ordRepo.getPendingOrders();
 	}
 
 	@Override
 	public List<Order> getSentOrders() {
-		List<Order> list = new ArrayList<Order>();
-		for(Order ord : this.ordRepo.findAll()) {
-			if(ord.getActualStatus().getStatus().equals("Send")) {
-				list.add(ord);
-			}
-		}
-		return list;
+		return this.ordRepo.getSentOrders();
 	}
 
 	@Override
 	public List<Order> getDeliveredOrdersInPeriod(Date startDate, Date endDate) {
-		List<Order> list = new ArrayList<Order>();
-		for(OrderStatus os: ordStaRepo.findByStatus("Delivered")){
-			if(os.getDateStatus().after(startDate) && os.getDateStatus().before(endDate)){
-				list.add(os.getOrder());
-			}
-		}
-		return list;
+		return this.ordRepo.getDeliveredOrdersInPeriod(startDate, endDate);
 	}
 
 	@Override
 	public List<Order> getDeliveredOrdersForUser(String username) {
-		List<Order> usrOrders = this.getAllOrdersMadeByUser(username);
-		List<Order> ordList = new ArrayList<Order>();
-		for(Order ord : usrOrders) {
-			if(ord.getActualStatus().getStatus().equals("Delivered")) {
-				ordList.add(ord);
-			}
-		}
-		return ordList;
+		User user= this.getUserByUsername(username).get();
+		return this.ordRepo.getDeliveredOrdersForUser(user);
 	}
 
 	@Override
 	public List<Product> getProductsOnePrice() {
-		List<Product> list = new ArrayList<Product>();
-		for(Product p: prodRepo.findAll()){
-			if(p.getAllPrices().size() == 1) {
-				list.add(p);
-			}
-		}
-		return list;
+		return this.prodRepo.getProductsOnePrice();
 	}
 
 	@Override
 	public List<Product> getSoldProductsOn(Date day) {
-		List<Product> list= new ArrayList<Product>();
-		for(OrderStatus os: ordStaRepo.findByDateStatus(day)) {
-			Order o = os.getOrder();
-			for(ProductOrder po: o.getProducts()) {
-                if (!list.contains(po.getProduct()))
-                    list.add(po.getProduct());
-			}
-		}
-		return list;
+		return this.prodRepo.getSoldProductsOn(day);
 	}
 }
