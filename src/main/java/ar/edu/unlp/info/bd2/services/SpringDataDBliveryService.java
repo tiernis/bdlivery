@@ -4,7 +4,6 @@ import ar.edu.unlp.info.bd2.model.*;
 import ar.edu.unlp.info.bd2.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +21,6 @@ public class SpringDataDBliveryService implements DBliveryService {
 
     @Autowired
     OrderRepository ordRepo;
-    
-    @Autowired
-    OrderStatusRepository ordStaRepo;
 
     @Override
     public Product createProduct(String name, Float price, Float weight, Supplier supplier) {
@@ -234,8 +230,7 @@ public class SpringDataDBliveryService implements DBliveryService {
 
 	@Override
 	public Product getMaxWeigth() {
-		//Float maxWeight = prodRepo.findMaxWeight();
-		return this.prodRepo.findProductWithMaxWeight(); //prodRepo.findByWeight(maxWeight);
+		return this.prodRepo.findProductWithMaxWeight();
 	}
 
 	@Override
